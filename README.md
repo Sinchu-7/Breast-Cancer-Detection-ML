@@ -205,7 +205,7 @@ Open the local URL displayed in your terminal to use the application.
 
 ## 👩‍💻 Author
 
-**Sinchhh Poojary**
+**Sinchana Poojary**
 
 GitHub: [@Sinchu-7](https://github.com/Sinchu-7)
 
