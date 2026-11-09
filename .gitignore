@@ -19,3 +19,12 @@ models/*.joblib
 # Operating system files
 .DS_Store
 Thumbs.db
+# Generated image dataset split files
+data/image_splits/
+
+# Trained deep learning models
+models/*.keras
+models/*.h5
+
+# Generated evaluation reports
+reports/
