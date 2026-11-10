@@ -1,9 +1,8 @@
 
 import os
 import re
-import glob
 import json
-from collections import defaultdict
+from pathlib import Path
 
 from sklearn.model_selection import StratifiedGroupKFold
 
@@ -19,29 +18,103 @@ OUTPUT_DIR = "data/image_splits"
 CLASSES = ["benign", "malignant"]
 MAGNIFICATIONS = ["40X", "100X", "200X", "400X"]
 
+SUPPORTED_EXTENSIONS = {".png", ".jpg", ".jpeg", ".tif", ".tiff"}
+
+
+def validate_dataset_structure(dataset_dir=DATASET_DIR):
+    """Validate dataset folders and image availability."""
+
+    root = Path(dataset_dir)
+
+    if not root.is_dir():
+        raise FileNotFoundError(
+            f"Dataset directory not found: {root}"
+        )
+
+    total_images = 0
+
+    for magnification in MAGNIFICATIONS:
+        for class_name in CLASSES:
+            folder = root / magnification / class_name
+
+            if not folder.is_dir():
+                raise FileNotFoundError(
+                    f"Required dataset folder is missing: {folder}"
+                )
+
+            images = [
+                file for file in folder.iterdir()
+                if file.is_file()
+                and file.suffix.lower() in SUPPORTED_EXTENSIONS
+            ]
+
+            if not images:
+                raise ValueError(
+                    f"No supported images found in: {folder}"
+                )
+
+            total_images += len(images)
+
+            print(
+                f"Validated {magnification}/{class_name}: "
+                f"{len(images)} images"
+            )
+
+    print(f"\nDataset validation successful: {total_images} images.")
+
+    return total_images
+
 
 def get_patient_id(filepath):
     filename = os.path.splitext(os.path.basename(filepath))[0]
-    return re.sub(r"-(40|100|200|400)-\d+$", "", filename)
+
+    return re.sub(
+        r"-(40|100|200|400)-\d+$",
+        "",
+        filename
+    )
 
 
-def collect_images():
+def collect_images(dataset_dir=DATASET_DIR):
+    """Collect image paths, labels and patient groups."""
+
     paths = []
     labels = []
     groups = []
 
+    validate_dataset_structure(dataset_dir)
+
+    root = Path(dataset_dir)
+
     for label, class_name in enumerate(CLASSES):
         for magnification in MAGNIFICATIONS:
-            folder = os.path.join(
-                DATASET_DIR, magnification, class_name
+
+            folder = root / magnification / class_name
+
+            files = sorted(
+                file for file in folder.iterdir()
+                if file.is_file()
+                and file.suffix.lower() in SUPPORTED_EXTENSIONS
             )
 
-            files = glob.glob(os.path.join(folder, "*.png"))
-
             for filepath in files:
-                paths.append(os.path.abspath(filepath))
+                paths.append(str(filepath.resolve()))
                 labels.append(label)
                 groups.append(get_patient_id(filepath))
+
+    normalized_paths = [
+        os.path.normcase(os.path.realpath(path))
+        for path in paths
+    ]
+
+    if len(normalized_paths) != len(set(normalized_paths)):
+        raise ValueError("Duplicate image paths detected.")
+
+    if not paths:
+        raise ValueError("No images were collected.")
+
+    if len(paths) != len(labels) or len(paths) != len(groups):
+        raise ValueError("Image paths, labels and groups are inconsistent.")
 
     return paths, labels, groups
 
@@ -51,7 +124,7 @@ def main():
 
     paths, labels, groups = collect_images()
 
-    print("Total images:", len(paths))
+    print("\nTotal images:", len(paths))
     print("Unique patients:", len(set(groups)))
 
     # First split: 80% development, 20% test
@@ -106,6 +179,7 @@ def main():
 
         for filepath in files:
             class_name = os.path.basename(os.path.dirname(filepath))
+
             records.append({
                 "path": filepath,
                 "label": CLASSES.index(class_name),
