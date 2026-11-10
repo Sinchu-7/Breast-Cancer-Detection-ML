@@ -1,23 +1,14 @@
 
 import streamlit as st
 import tensorflow as tf
-import numpy as np
 
 from PIL import Image
-from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
 
-
-# -------------------------------
-# CONFIGURATION
-# -------------------------------
-
-MODEL_PATH = (
-    "models/breast_histopathology_mobilenetv2.keras"
+from src.predict import (
+    MODEL_PATH,
+    CLASSIFICATION_THRESHOLD,
+    predict_image,
 )
-
-IMAGE_SIZE = (224, 224)
-
-CLASS_NAMES = ["Benign", "Malignant"]
 
 
 # -------------------------------
@@ -26,7 +17,7 @@ CLASS_NAMES = ["Benign", "Malignant"]
 
 st.set_page_config(
     page_title="Breast Cancer AI",
-    page_icon="🎗️",
+    page_icon="🔬",
     layout="wide"
 )
 
@@ -57,13 +48,6 @@ st.markdown("""
     font-size: 17px;
 }
 
-.result-card {
-    padding: 25px;
-    border-radius: 15px;
-    background-color: #151F32;
-    border: 1px solid #263449;
-}
-
 .warning {
     padding: 15px;
     border-radius: 10px;
@@ -80,50 +64,22 @@ st.markdown("""
 
 @st.cache_resource
 def load_model():
-    return tf.keras.models.load_model(MODEL_PATH)
 
+    if not MODEL_PATH.exists():
+        raise FileNotFoundError(
+            f"Model file not found: {MODEL_PATH}"
+        )
 
-# -------------------------------
-# PREDICTION FUNCTION
-# -------------------------------
-
-def predict_image(image, model):
-
-    image = image.convert("RGB")
-    resized_image = image.resize(IMAGE_SIZE)
-
-    image_array = np.array(
-        resized_image,
-        dtype=np.float32
+    return tf.keras.models.load_model(
+        MODEL_PATH
     )
-
-    image_array = preprocess_input(image_array)
-
-    image_array = np.expand_dims(
-        image_array,
-        axis=0
-    )
-
-    prediction = model.predict(
-        image_array,
-        verbose=0
-    )[0][0]
-
-    if prediction >= 0.5:
-        predicted_class = "Malignant"
-        confidence = prediction * 100
-    else:
-        predicted_class = "Benign"
-        confidence = (1 - prediction) * 100
-
-    return predicted_class, confidence
 
 
 # -------------------------------
 # SIDEBAR
 # -------------------------------
 
-st.sidebar.title("🎗️ Breast Cancer AI")
+st.sidebar.title("🔬 Breast Cancer AI")
 
 page = st.sidebar.radio(
     "Navigation",
@@ -143,7 +99,7 @@ page = st.sidebar.radio(
 if page == "Home":
 
     st.markdown(
-        '<div class="main-title">🎗️ Breast Cancer AI</div>',
+        '<div class="main-title">🔬 Breast Cancer AI</div>',
         unsafe_allow_html=True
     )
 
@@ -159,6 +115,7 @@ if page == "Home":
     col1, col2 = st.columns(2)
 
     with col1:
+
         st.subheader("Project Overview")
 
         st.write("""
@@ -177,6 +134,7 @@ if page == "Home":
         )
 
     with col2:
+
         st.subheader("Model Information")
 
         st.metric("Architecture", "MobileNetV2")
@@ -184,15 +142,19 @@ if page == "Home":
         st.metric("Dataset Images", "7,909")
         st.metric("Classes", "2")
 
+        st.metric(
+            "Selected Threshold",
+            f"{CLASSIFICATION_THRESHOLD:.2f}"
+        )
+
     st.divider()
 
-    st.markdown("""
-    <div class="warning">
-    ⚠️ Educational research prototype only. This application is
-    not a medical diagnostic system and must not be used to
-    make healthcare decisions.
-    </div>
-    """, unsafe_allow_html=True)
+    st.warning("""
+    ⚠️ Educational research prototype only.
+
+    This application is not a medical diagnostic system and must
+    not be used to make healthcare decisions.
+    """)
 
 
 # -------------------------------
@@ -208,6 +170,11 @@ elif page == "Image Prediction":
         "to demonstrate the model."
     )
 
+    st.info(
+        f"Experimental classification threshold: "
+        f"{CLASSIFICATION_THRESHOLD:.2f}"
+    )
+
     uploaded_file = st.file_uploader(
         "Upload an image",
         type=["png", "jpg", "jpeg"]
@@ -215,36 +182,42 @@ elif page == "Image Prediction":
 
     if uploaded_file is not None:
 
-        image = Image.open(uploaded_file).convert("RGB")
+        try:
 
-        col1, col2 = st.columns(2)
+            image = Image.open(uploaded_file).convert("RGB")
 
-        with col1:
-            st.subheader("Uploaded Image")
-            st.image(
-                image,
-                caption="Uploaded histopathology image",
-                use_container_width=True
-            )
+            col1, col2 = st.columns(2)
 
-        with col2:
+            with col1:
 
-            st.subheader("Prediction")
+                st.subheader("Uploaded Image")
 
-            if st.button(
-                "Analyze Image",
-                type="primary",
-                use_container_width=True
-            ):
+                st.image(
+                    image,
+                    caption="Uploaded histopathology image",
+                    use_container_width=True
+                )
 
-                try:
+            with col2:
+
+                st.subheader("Prediction")
+
+                if st.button(
+                    "Analyze Image",
+                    type="primary",
+                    use_container_width=True
+                ):
+
                     with st.spinner("Analyzing image..."):
 
                         model = load_model()
 
-                        predicted_class, confidence = predict_image(
-                            image,
-                            model
+                        predicted_class, confidence, malignant_score = (
+                            predict_image(
+                                image,
+                                model,
+                                CLASSIFICATION_THRESHOLD
+                            )
                         )
 
                     if predicted_class == "Benign":
@@ -264,21 +237,32 @@ elif page == "Image Prediction":
                         f"{confidence:.2f}%"
                     )
 
+                    st.metric(
+                        "Malignant-class Output Score",
+                        f"{malignant_score * 100:.2f}%"
+                    )
+
                     st.caption(
-                        "Confidence is the model's output score, "
-                        "not a medical probability."
+                        "The malignant-class output score is compared "
+                        "with the selected threshold. Neither score "
+                        "represents a clinically calibrated probability."
+                    )
+
+                    st.write(
+                        f"Classification threshold: "
+                        f"{CLASSIFICATION_THRESHOLD:.2f}"
                     )
 
                     st.warning(
-                        "This prediction is experimental and "
-                        "must not be interpreted as a diagnosis."
+                        "This prediction is experimental and must not "
+                        "be interpreted as a medical diagnosis."
                     )
 
-                except Exception as error:
+        except Exception as error:
 
-                    st.error(
-                        f"Prediction failed: {error}"
-                    )
+            st.error(
+                f"Prediction failed: {error}"
+            )
 
 
 # -------------------------------
@@ -289,8 +273,11 @@ elif page == "Model Dashboard":
 
     st.title("📊 Model Dashboard")
 
+    st.subheader("Baseline Model - Original Test Evaluation")
+
     st.write(
-        "Results from the original model's held-out test set."
+        "These are the previously recorded held-out test results "
+        "at the original threshold of 0.50."
     )
 
     col1, col2, col3, col4 = st.columns(4)
@@ -300,7 +287,7 @@ elif page == "Model Dashboard":
     col3.metric("Recall", "67.39%")
     col4.metric("F1-score", "75.42%")
 
-    st.subheader("Confusion Matrix")
+    st.subheader("Original Test Confusion Matrix")
 
     st.write("""
     | Actual Class | Predicted Benign | Predicted Malignant |
@@ -308,6 +295,27 @@ elif page == "Model Dashboard":
     | Benign | 363 | 125 |
     | Malignant | 360 | 744 |
     """)
+
+    st.divider()
+
+    st.subheader("Selected Threshold - Validation Results")
+
+    st.write(
+        "The following results were obtained using the validation "
+        "dataset and the selected threshold of 0.30."
+    )
+
+    col1, col2, col3, col4 = st.columns(4)
+
+    col1.metric("Accuracy", "74.40%")
+    col2.metric("Precision", "75.36%")
+    col3.metric("Recall", "92.50%")
+    col4.metric("F1-score", "83.05%")
+
+    st.info(
+        "These are validation results, not independent test results. "
+        "The test set was not used to select the threshold."
+    )
 
     st.warning(
         "The model has limited performance and is not suitable "
@@ -330,6 +338,7 @@ elif page == "About":
     using deep learning.
 
     **Technologies used:**
+
     - Python
     - TensorFlow
     - Keras
@@ -339,10 +348,13 @@ elif page == "About":
     - BreakHis dataset
 
     **Classification categories:**
+
     - Benign
     - Malignant
 
     **Dataset:** BreakHis breast histopathology images.
+
+    **Prediction threshold:** 0.30
 
     **Purpose:** Educational and research demonstration only.
     """)
