@@ -4,36 +4,55 @@ from sklearn.datasets import load_breast_cancer
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
-# Step 1: Load the dataset
-data = load_breast_cancer()
 
-X = data.data
-y = data.target
+def load_data():
+    """Load the Wisconsin Breast Cancer dataset."""
+    dataset = load_breast_cancer()
+    return dataset.data, dataset.target
 
-print("Original Dataset Shape:", X.shape)
 
-# Step 2: Split the dataset
-X_train, X_test, y_train, y_test = train_test_split(
-    X,
-    y,
-    test_size=0.2,
-    random_state=42,
-    stratify=y
-)
+def preprocess_data(X, y, test_size=0.2, random_state=42):
+    """Split data and scale features without data leakage."""
 
-print("\nTraining Samples:", X_train.shape[0])
-print("Testing Samples:", X_test.shape[0])
+    X_train, X_test, y_train, y_test = train_test_split(
+        X,
+        y,
+        test_size=test_size,
+        random_state=random_state,
+        stratify=y
+    )
 
-# Step 3: Feature Scaling
-scaler = StandardScaler()
+    scaler = StandardScaler()
 
-X_train_scaled = scaler.fit_transform(X_train)
-X_test_scaled = scaler.transform(X_test)
+    X_train_scaled = scaler.fit_transform(X_train)
+    X_test_scaled = scaler.transform(X_test)
 
-print("\nPreprocessing Completed!")
-print("Scaled Training Shape:", X_train_scaled.shape)
-print("Scaled Testing Shape:", X_test_scaled.shape)
+    return (
+        X_train_scaled,
+        X_test_scaled,
+        y_train,
+        y_test,
+        scaler
+    )
 
-# Step 4: Check scaled feature values
-print("\nFirst 5 scaled training records:")
-print(X_train_scaled[:5])
+
+def main():
+    X, y = load_data()
+
+    print("Original Dataset Shape:", X.shape)
+
+    X_train, X_test, y_train, y_test, scaler = preprocess_data(X, y)
+
+    print("\nTraining Samples:", X_train.shape[0])
+    print("Testing Samples:", X_test.shape[0])
+
+    print("\nPreprocessing Completed!")
+    print("Scaled Training Shape:", X_train.shape)
+    print("Scaled Testing Shape:", X_test.shape)
+
+    print("\nFirst 5 scaled training records:")
+    print(X_train[:5])
+
+
+if __name__ == "__main__":
+    main()
