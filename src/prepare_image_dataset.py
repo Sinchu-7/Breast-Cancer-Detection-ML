@@ -6,7 +6,13 @@ from pathlib import Path
 
 from sklearn.model_selection import StratifiedGroupKFold
 
-# Dataset location
+from src.dataset_config import DatasetSplitConfig
+
+
+# ============================================================
+# CONFIGURATION
+# ============================================================
+
 DATASET_DIR = (
     r"C:\Users\sinch\Downloads\BreakHis - Breast Cancer Histopathological Database"
     r"\BreakHis - Breast Cancer Histopathological Database"
@@ -18,11 +24,72 @@ OUTPUT_DIR = "data/image_splits"
 CLASSES = ["benign", "malignant"]
 MAGNIFICATIONS = ["40X", "100X", "200X", "400X"]
 
-SUPPORTED_EXTENSIONS = {".png", ".jpg", ".jpeg", ".tif", ".tiff"}
+SUPPORTED_EXTENSIONS = {
+    ".png", ".jpg", ".jpeg", ".tif", ".tiff"
+}
 
+
+# ============================================================
+# FILENAME VALIDATION
+# ============================================================
+
+def validate_image_filename(filepath, expected_magnification=None):
+    """Validate a BreakHis filename and optional folder magnification."""
+
+    filename = Path(filepath).stem
+
+    # Actual BreakHis naming convention.
+    full_pattern = (
+        r"^SOB_[BM]_[A-Z]-\d+-[A-Za-z0-9]+-"
+        r"(40|100|200|400)-(\d+)$"
+    )
+
+    # Short naming convention used by existing unit tests.
+    short_pattern = (
+        r"^SOB_[BM]_[A-Z]-(40|100|200|400)-(\d+)$"
+    )
+
+    match = (
+        re.fullmatch(full_pattern, filename)
+        or re.fullmatch(short_pattern, filename)
+    )
+
+    if not match:
+        raise ValueError(
+            f"Invalid BreakHis filename format: {Path(filepath).name}"
+        )
+
+    magnification = f"{match.group(1)}X"
+
+    if expected_magnification is not None:
+        if magnification != expected_magnification:
+            raise ValueError(
+                f"Filename magnification {magnification} does not match "
+                f"folder magnification {expected_magnification}: "
+                f"{Path(filepath).name}"
+            )
+
+    return True
+
+
+def get_patient_id(filepath):
+    """Extract patient ID without requiring filename validation."""
+
+    filename = Path(filepath).stem
+
+    return re.sub(
+        r"-(40|100|200|400)-\d+$",
+        "",
+        filename
+    )
+
+
+# ============================================================
+# DATASET STRUCTURE VALIDATION
+# ============================================================
 
 def validate_dataset_structure(dataset_dir=DATASET_DIR):
-    """Validate dataset folders and image availability."""
+    """Validate all expected class and magnification folders."""
 
     root = Path(dataset_dir)
 
@@ -33,13 +100,16 @@ def validate_dataset_structure(dataset_dir=DATASET_DIR):
 
     total_images = 0
 
+    print("\n========== DATASET STRUCTURE VALIDATION ==========")
+
     for magnification in MAGNIFICATIONS:
         for class_name in CLASSES:
+
             folder = root / magnification / class_name
 
             if not folder.is_dir():
                 raise FileNotFoundError(
-                    f"Required dataset folder is missing: {folder}"
+                    f"Dataset folder missing: {folder}"
                 )
 
             images = [
@@ -53,162 +123,317 @@ def validate_dataset_structure(dataset_dir=DATASET_DIR):
                     f"No supported images found in: {folder}"
                 )
 
-            total_images += len(images)
+            count = len(images)
+            total_images += count
 
             print(
-                f"Validated {magnification}/{class_name}: "
-                f"{len(images)} images"
+                f"{magnification} | {class_name}: {count} images"
             )
 
-    print(f"\nDataset validation successful: {total_images} images.")
+    print(f"\nTotal images: {total_images}")
+    print("Dataset structure validation successful.")
 
     return total_images
 
 
-def get_patient_id(filepath):
-    filename = os.path.splitext(os.path.basename(filepath))[0]
-
-    return re.sub(
-        r"-(40|100|200|400)-\d+$",
-        "",
-        filename
-    )
-
+# ============================================================
+# IMAGE COLLECTION
+# ============================================================
 
 def collect_images(dataset_dir=DATASET_DIR):
-    """Collect image paths, labels and patient groups."""
-
-    paths = []
-    labels = []
-    groups = []
-
-    validate_dataset_structure(dataset_dir)
+    """Collect image paths, labels, and patient groups."""
 
     root = Path(dataset_dir)
 
-    for label, class_name in enumerate(CLASSES):
-        for magnification in MAGNIFICATIONS:
+    validate_dataset_structure(root)
+
+    all_paths = []
+    all_labels = []
+    all_groups = []
+
+    seen_paths = set()
+
+    print("\n========== COLLECTING DATASET IMAGES ==========")
+
+    for magnification in MAGNIFICATIONS:
+        for class_name in CLASSES:
 
             folder = root / magnification / class_name
+            label = CLASSES.index(class_name)
 
-            files = sorted(
+            images = sorted(
                 file for file in folder.iterdir()
                 if file.is_file()
                 and file.suffix.lower() in SUPPORTED_EXTENSIONS
             )
 
-            for filepath in files:
-                paths.append(str(filepath.resolve()))
-                labels.append(label)
-                groups.append(get_patient_id(filepath))
+            for image in images:
 
-    normalized_paths = [
-        os.path.normcase(os.path.realpath(path))
-        for path in paths
+                validate_image_filename(
+                    image,
+                    expected_magnification=magnification
+                )
+
+                normalized_path = os.path.normcase(
+                    os.path.abspath(str(image))
+                )
+
+                if normalized_path in seen_paths:
+                    raise ValueError(
+                        f"Duplicate image path found: {image}"
+                    )
+
+                seen_paths.add(normalized_path)
+
+                patient_id = get_patient_id(image)
+
+                all_paths.append(str(image))
+                all_labels.append(label)
+                all_groups.append(patient_id)
+
+    if not all_paths:
+        raise ValueError("No images found in dataset.")
+
+    if not (
+        len(all_paths) == len(all_labels) == len(all_groups)
+    ):
+        raise ValueError(
+            "Image paths, labels, and groups have different lengths."
+        )
+
+    print(f"Collected images: {len(all_paths)}")
+    print(f"Unique patients: {len(set(all_groups))}")
+
+    return all_paths, all_labels, all_groups
+
+
+# ============================================================
+# SPLIT INTEGRITY VALIDATION
+# ============================================================
+
+def validate_splits(splits, all_paths, all_groups):
+    """Validate split completeness and patient separation."""
+
+    required_splits = {"train", "validation", "test"}
+
+    if set(splits.keys()) != required_splits:
+        raise ValueError(
+            "Splits must contain exactly train, validation, and test."
+        )
+
+    if len(all_paths) != len(all_groups):
+        raise ValueError(
+            "Image paths and patient groups have different lengths."
+        )
+
+    all_path_set = {
+        os.path.normcase(os.path.abspath(path))
+        for path in all_paths
+    }
+
+    if len(all_path_set) != len(all_paths):
+        raise ValueError(
+            "Duplicate image paths found in the original dataset."
+        )
+
+    split_path_sets = {}
+    patient_sets = {}
+
+    path_to_patient = {
+        os.path.normcase(os.path.abspath(path)): group
+        for path, group in zip(all_paths, all_groups)
+    }
+
+    for split_name, paths in splits.items():
+
+        if not paths:
+            raise ValueError(
+                f"{split_name} split is empty."
+            )
+
+        normalized_paths = [
+            os.path.normcase(os.path.abspath(path))
+            for path in paths
+        ]
+
+        if len(normalized_paths) != len(set(normalized_paths)):
+            raise ValueError(
+                f"Duplicate image found in {split_name} split."
+            )
+
+        split_path_sets[split_name] = set(normalized_paths)
+
+        unknown_paths = (
+            split_path_sets[split_name] - all_path_set
+        )
+
+        if unknown_paths:
+            raise ValueError(
+                f"Extra image paths found in {split_name} split."
+            )
+
+        patient_sets[split_name] = {
+            path_to_patient[path]
+            for path in split_path_sets[split_name]
+        }
+
+    # Check duplicate images across different splits first.
+    split_names = ["train", "validation", "test"]
+
+    for i in range(len(split_names)):
+        for j in range(i + 1, len(split_names)):
+
+            first = split_names[i]
+            second = split_names[j]
+
+            overlap = (
+                split_path_sets[first]
+                & split_path_sets[second]
+            )
+
+            if overlap:
+                raise ValueError(
+                    f"Duplicate images between {first} and {second}."
+                )
+
+    combined_paths = set().union(
+        *split_path_sets.values()
+    )
+
+    if combined_paths != all_path_set:
+        raise ValueError(
+            "Dataset splits contain missing or extra image paths."
+        )
+
+    # Check patient leakage.
+    for i in range(len(split_names)):
+        for j in range(i + 1, len(split_names)):
+
+            first = split_names[i]
+            second = split_names[j]
+
+            overlap = patient_sets[first] & patient_sets[second]
+
+            if overlap:
+                raise ValueError(
+                    f"Patient leakage between {first} and {second}: "
+                    f"{sorted(overlap)}"
+                )
+
+    return patient_sets
+
+
+# ============================================================
+# DATASET SPLITTING
+# ============================================================
+
+def main(config=None):
+    """Create patient-wise train, validation, and test splits."""
+
+    if config is None:
+        config = DatasetSplitConfig()
+
+    all_paths, all_labels, all_groups = collect_images()
+
+    print("\n========== CREATING DATASET SPLITS ==========")
+
+    outer_splitter = StratifiedGroupKFold(
+        n_splits=config.n_splits,
+        shuffle=True,
+        random_state=config.random_state
+    )
+
+    development_indices, test_indices = next(
+        outer_splitter.split(
+            all_paths,
+            all_labels,
+            all_groups
+        )
+    )
+
+    development_paths = [
+        all_paths[i] for i in development_indices
     ]
 
-    if len(normalized_paths) != len(set(normalized_paths)):
-        raise ValueError("Duplicate image paths detected.")
+    development_labels = [
+        all_labels[i] for i in development_indices
+    ]
 
-    if not paths:
-        raise ValueError("No images were collected.")
+    development_groups = [
+        all_groups[i] for i in development_indices
+    ]
 
-    if len(paths) != len(labels) or len(paths) != len(groups):
-        raise ValueError("Image paths, labels and groups are inconsistent.")
+    test_paths = [
+        all_paths[i] for i in test_indices
+    ]
 
-    return paths, labels, groups
-
-
-def main():
-    os.makedirs(OUTPUT_DIR, exist_ok=True)
-
-    paths, labels, groups = collect_images()
-
-    print("\nTotal images:", len(paths))
-    print("Unique patients:", len(set(groups)))
-
-    # First split: 80% development, 20% test
-    splitter = StratifiedGroupKFold(
-        n_splits=5,
+    inner_splitter = StratifiedGroupKFold(
+        n_splits=config.n_splits,
         shuffle=True,
-        random_state=42
+        random_state=config.random_state
     )
 
-    train_val_idx, test_idx = next(
-        splitter.split(paths, labels, groups)
-    )
-
-    # Second split: 80% train, 20% validation
-    train_val_paths = [paths[i] for i in train_val_idx]
-    train_val_labels = [labels[i] for i in train_val_idx]
-    train_val_groups = [groups[i] for i in train_val_idx]
-
-    second_splitter = StratifiedGroupKFold(
-        n_splits=5,
-        shuffle=True,
-        random_state=42
-    )
-
-    train_idx, val_idx = next(
-        second_splitter.split(
-            train_val_paths,
-            train_val_labels,
-            train_val_groups
+    train_indices, validation_indices = next(
+        inner_splitter.split(
+            development_paths,
+            development_labels,
+            development_groups
         )
     )
+
+    train_paths = [
+        development_paths[i] for i in train_indices
+    ]
+
+    validation_paths = [
+        development_paths[i] for i in validation_indices
+    ]
 
     splits = {
-        "train": [train_val_paths[i] for i in train_idx],
-        "validation": [train_val_paths[i] for i in val_idx],
-        "test": [paths[i] for i in test_idx],
+        "train": train_paths,
+        "validation": validation_paths,
+        "test": test_paths
     }
 
-    # Verify no patient appears in multiple splits
-    patient_sets = {
-        name: {get_patient_id(path) for path in files}
-        for name, files in splits.items()
-    }
+    patient_sets = validate_splits(
+        splits,
+        all_paths,
+        all_groups
+    )
 
-    assert patient_sets["train"].isdisjoint(patient_sets["validation"])
-    assert patient_sets["train"].isdisjoint(patient_sets["test"])
-    assert patient_sets["validation"].isdisjoint(patient_sets["test"])
+    output_dir = Path(OUTPUT_DIR)
+    output_dir.mkdir(parents=True, exist_ok=True)
 
-    # Save split information
-    for split_name, files in splits.items():
+    for split_name, paths in splits.items():
+
         records = []
 
-        for filepath in files:
-            class_name = os.path.basename(os.path.dirname(filepath))
+        for image_path in paths:
+
+            image = Path(image_path)
+            class_name = image.parent.name
+            patient_id = get_patient_id(image)
 
             records.append({
-                "path": filepath,
+                "path": str(image),
                 "label": CLASSES.index(class_name),
                 "class": class_name,
-                "patient_id": get_patient_id(filepath)
+                "patient_id": patient_id
             })
 
-        output_path = os.path.join(
-            OUTPUT_DIR, f"{split_name}.json"
-        )
+        output_file = output_dir / f"{split_name}.json"
 
-        with open(output_path, "w", encoding="utf-8") as file:
-            json.dump(records, file, indent=2)
+        with open(output_file, "w", encoding="utf-8") as file:
+            json.dump(records, file, indent=4)
 
-        print(f"\n{split_name.upper()}")
-        print("Images:", len(records))
         print(
-            "Benign:",
-            sum(r["class"] == "benign" for r in records)
+            f"{split_name.capitalize()}: "
+            f"{len(records)} images | "
+            f"{len(patient_sets[split_name])} patients"
         )
-        print(
-            "Malignant:",
-            sum(r["class"] == "malignant" for r in records)
-        )
-        print("Patients:", len(patient_sets[split_name]))
-        print("Saved:", output_path)
 
-    print("\nSUCCESS: Patient-wise split completed.")
-    print("No patient is shared between the splits.")
+    print("\nDataset splitting completed successfully.")
+    print(f"Split files saved in: {output_dir.resolve()}")
 
 
 if __name__ == "__main__":
