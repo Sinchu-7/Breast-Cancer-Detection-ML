@@ -1,8 +1,10 @@
+
 import pytest
 
 from src.prepare_image_dataset import (
     CLASSES,
     MAGNIFICATIONS,
+    get_patient_id,
     validate_dataset_structure,
 )
 
@@ -15,7 +17,6 @@ def create_dataset_structure(root):
             folder = root / magnification / class_name
             folder.mkdir(parents=True)
 
-            # Create a sample image file for validation
             (folder / "sample.png").touch()
 
 
@@ -57,3 +58,24 @@ def test_unsupported_image_extension(tmp_path):
 
     with pytest.raises(ValueError):
         validate_dataset_structure(tmp_path)
+
+
+@pytest.mark.parametrize(
+    "filename",
+    [
+        "SOB_B_A-40-001.png",
+        "SOB_B_A-100-001.png",
+        "SOB_B_A-200-001.png",
+        "SOB_B_A-400-001.png",
+    ],
+)
+def test_patient_id_extraction_across_magnifications(filename):
+    patient_id = get_patient_id(filename)
+
+    assert patient_id == "SOB_B_A"
+
+
+def test_patient_id_without_magnification_suffix():
+    filename = "SOB_B_A.png"
+
+    assert get_patient_id(filename) == "SOB_B_A"
