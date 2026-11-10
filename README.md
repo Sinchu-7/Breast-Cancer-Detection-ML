@@ -1,3 +1,4 @@
+
 # 🎗️ Breast Cancer Detection Using Deep Learning
 
 ### Histopathological Image Classification | Python | TensorFlow | MobileNetV2
@@ -25,10 +26,16 @@ The system uses a pretrained **MobileNetV2** model to extract image features and
 - Image upload and prediction
 - Model evaluation using classification metrics
 - Fine-tuning of pretrained layers
+- Patient-wise dataset splitting
+- Dataset statistics and distribution analysis
+- Dataset filename and structure validation
+- JSON split-file integrity validation
+- Structured logging for dataset operations
+- Automated unit testing
 - Interactive Streamlit web application
 - Model performance dashboard
 
-## 🧠 Technologies Used
+## 🧰 Technologies Used
 
 | Category | Technologies |
 |---|---|
@@ -40,6 +47,8 @@ The system uses a pretrained **MobileNetV2** model to extract image features and
 | Image Processing | Pillow |
 | Visualization | Matplotlib, Seaborn |
 | Web Application | Streamlit |
+| Testing | Pytest |
+| Logging | Python Logging |
 | Version Control | Git, GitHub |
 
 ## 📂 Dataset
@@ -47,6 +56,7 @@ The system uses a pretrained **MobileNetV2** model to extract image features and
 **Dataset:** BreakHis – Breast Cancer Histopathological Database
 
 - Total images: 7,909
+- Unique patients: 82
 - Benign images: 2,480
 - Malignant images: 5,429
 - Image size: 224 × 224 pixels
@@ -55,6 +65,23 @@ The system uses a pretrained **MobileNetV2** model to extract image features and
 The project uses the binary classification dataset.
 
 The dataset is not included in this GitHub repository. Download and extract it separately before preparing the image splits.
+
+### Class Distribution
+
+| Class | Images | Percentage |
+|---|---:|---:|
+| Benign | 2,480 | 31.36% |
+| Malignant | 5,429 | 68.64% |
+| **Total** | **7,909** | **100%** |
+
+### Magnification Distribution
+
+| Magnification | Images | Percentage |
+|---|---:|---:|
+| 40X | 1,995 | 25.22% |
+| 100X | 2,081 | 26.31% |
+| 200X | 2,013 | 25.45% |
+| 400X | 1,820 | 23.01% |
 
 ## ⚙️ Model Development
 
@@ -79,6 +106,54 @@ Patient-wise splitting helps prevent images from the same patient appearing acro
 | Validation | 1,258 | 13 |
 | Testing | 1,592 | 16 |
 | **Total** | **7,909** | **82** |
+
+## 🔍 Dataset Validation and Statistics
+
+The project includes utilities for checking dataset quality and split integrity.
+
+### Dataset Preparation
+
+```bash
+python -m src.prepare_image_dataset
+```
+
+Prepares patient-wise training, validation, and test splits.
+
+### Dataset Statistics
+
+```bash
+python -m src.dataset_statistics
+```
+
+Generates:
+- Total image count
+- Unique patient count
+- Benign and malignant distribution
+- Magnification distribution
+- Class and magnification percentages
+
+### Split JSON Validation
+
+```bash
+python -m src.split_validation
+```
+
+Checks:
+- Required JSON fields
+- Valid class names and labels
+- Duplicate image paths
+- Patient leakage between splits
+- Missing or invalid split files
+
+### Automated Testing
+
+Run the complete test suite:
+
+```bash
+python -m pytest -v
+```
+
+The tests cover dataset structure, patient ID extraction, split integrity, statistics, and JSON validation.
 
 ## 📈 Model Performance
 
@@ -108,18 +183,24 @@ Breast-Cancer-Detection-ML/
 │   ├── train_model.py
 │   ├── evaluate_model.py
 │   ├── predict.py
+│   ├── dataset_config.py
 │   ├── prepare_image_dataset.py
+│   ├── dataset_statistics.py
+│   ├── split_validation.py
 │   ├── train_image_model.py
 │   ├── evaluate_image_model.py
 │   └── finetune_image_model.py
 │
 ├── notebooks/
 ├── tests/
-├── docs/
-├── data/                 # Local dataset and split files
-├── models/               # Locally trained models
-├── reports/              # Evaluation reports
+│   ├── test_image_dataset.py
+│   ├── test_dataset_statistics.py
+│   └── test_split_validation.py
 │
+├── docs/
+├── data/
+├── models/
+├── reports/
 ├── requirements.txt
 ├── .gitignore
 └── README.md
@@ -164,19 +245,19 @@ python -m pip install -r requirements.txt
 Download and extract the BreakHis dataset. Configure the dataset path in the preparation script if required.
 
 ```bash
-python src/prepare_image_dataset.py
+python -m src.prepare_image_dataset
 ```
 
 ### 7. Train the image classification model
 
 ```bash
-python src/train_image_model.py
+python -m src.train_image_model
 ```
 
 ### 8. Evaluate the model
 
 ```bash
-python src/evaluate_image_model.py
+python -m src.evaluate_image_model
 ```
 
 ### 9. Run the Streamlit application
@@ -210,5 +291,3 @@ Open the local URL displayed in your terminal to use the application.
 GitHub: [@Sinchu-7](https://github.com/Sinchu-7)
 
 ---
-
-⭐ If you find this project interesting, consider giving the repository a star!
