@@ -1,5 +1,10 @@
 \# Dataset Documentation
 
+This repository contains two separate experiments: the image-classification
+pipeline uses BreakHis, while the tabular baseline in `src/train_model.py`
+uses the Wisconsin Diagnostic Breast Cancer dataset described below. The
+Wisconsin dataset is not used by the BreakHis image model or Streamlit app.
+
 
 
 \## Dataset Name
