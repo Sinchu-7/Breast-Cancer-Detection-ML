@@ -83,3 +83,15 @@ def test_threshold_analysis_rejects_fractional_labels():
         match="Labels must contain only 0 and 1",
     ):
         analyze_thresholds(labels, probabilities)
+
+
+def test_threshold_analysis_rejects_multiple_probability_columns():
+
+    labels = np.array([0, 1])
+    probabilities = np.array([[0.9, 0.1], [0.1, 0.9]])
+
+    with pytest.raises(
+        ValueError,
+        match="one-dimensional or a single-column",
+    ):
+        analyze_thresholds(labels, probabilities)

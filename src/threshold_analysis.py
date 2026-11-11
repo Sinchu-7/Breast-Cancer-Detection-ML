@@ -18,7 +18,14 @@ THRESHOLDS = np.arange(0.20, 0.81, 0.05)
 def analyze_thresholds(true_labels, probabilities):
 
     true_labels = np.asarray(true_labels)
-    probabilities = np.asarray(probabilities).reshape(-1)
+    probabilities = np.asarray(probabilities)
+
+    if probabilities.ndim == 2 and probabilities.shape[1] == 1:
+        probabilities = probabilities[:, 0]
+    elif probabilities.ndim != 1:
+        raise ValueError(
+            "Probabilities must be one-dimensional or a single-column array."
+        )
 
     if len(true_labels) != len(probabilities):
         raise ValueError(
