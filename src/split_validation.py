@@ -77,6 +77,18 @@ def validate_split_records(records):
                 f"Record {index} has unknown class: {class_name}"
             )
 
+        path_classes = {
+            part.casefold()
+            for part in Path(image_path.replace("\\", "/")).parts
+            if part.casefold() in VALID_CLASSES
+        }
+
+        if path_classes and class_name not in path_classes:
+            raise ValueError(
+                f"Class mismatch in record {index}: "
+                f"path indicates {sorted(path_classes)}."
+            )
+
         if isinstance(label, bool) or not isinstance(label, int):
             raise ValueError(
                 f"Record {index} has an invalid label."

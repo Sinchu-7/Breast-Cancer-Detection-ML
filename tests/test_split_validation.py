@@ -88,6 +88,13 @@ def test_unknown_class():
         validate_split_records([record])
 
 
+def test_class_must_match_image_path_directory():
+    record = create_valid_record(path="40X/malignant/image.png")
+
+    with pytest.raises(ValueError, match="Class mismatch"):
+        validate_split_records([record])
+
+
 def test_invalid_label():
     record = create_valid_record(label=2)
 
