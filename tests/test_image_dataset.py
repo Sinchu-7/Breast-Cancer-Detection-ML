@@ -104,9 +104,21 @@ def test_invalid_split_count():
         DatasetSplitConfig(n_splits=1)
 
 
+@pytest.mark.parametrize("n_splits", [2.0, 2.5, True])
+def test_non_integer_split_count(n_splits):
+    with pytest.raises(ValueError, match="n_splits must be an integer"):
+        DatasetSplitConfig(n_splits=n_splits)
+
+
 def test_negative_random_state():
     with pytest.raises(ValueError):
         DatasetSplitConfig(random_state=-1)
+
+
+@pytest.mark.parametrize("random_state", [1.5, True])
+def test_non_integer_random_state(random_state):
+    with pytest.raises(ValueError, match="random_state must be an integer"):
+        DatasetSplitConfig(random_state=random_state)
 
 
 # Dataset split validation tests
