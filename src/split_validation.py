@@ -90,7 +90,11 @@ def validate_split_records(records):
                 f"{class_name} must have label {expected_label}."
             )
 
-        if not isinstance(patient_id, str) or not patient_id.strip():
+        if (
+            not isinstance(patient_id, str)
+            or not patient_id.strip()
+            or patient_id != patient_id.strip()
+        ):
             raise ValueError(
                 f"Record {index} has an invalid patient ID."
             )

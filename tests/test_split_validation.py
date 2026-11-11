@@ -119,6 +119,13 @@ def test_empty_patient_id():
         validate_split_records([record])
 
 
+def test_patient_id_with_surrounding_whitespace():
+    record = create_valid_record(patient_id=" patient1 ")
+
+    with pytest.raises(ValueError, match="invalid patient ID"):
+        validate_split_records([record])
+
+
 # ============================================================
 # JSON FILE LOADING TESTS
 # ============================================================
