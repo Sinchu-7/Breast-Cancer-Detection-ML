@@ -6,4 +6,5 @@ scikit-learn
 jupyter
 streamlit
 joblib
-pytesttensorflow==2.20.0
+pytest
+tensorflow==2.20.0

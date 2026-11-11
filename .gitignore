@@ -28,3 +28,37 @@ models/*.h5
 
 # Generated evaluation reports
 reports/
+
+
+# Virtual Environments
+venv/
+.venv/
+venv-linux/
+.pytest_cache/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Environment variables
+.env
+
+# Generated model files
+models/*.pkl
+models/*.joblib
+models/*.keras
+models/*.h5
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Generated image dataset split files
+data/image_splits/
+
+# Generated evaluation reports
+reports/
