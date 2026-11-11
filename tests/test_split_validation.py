@@ -159,6 +159,14 @@ def test_invalid_json_file(tmp_path):
         load_split_records(json_file)
 
 
+def test_invalid_utf8_json_file(tmp_path):
+    json_file = tmp_path / "invalid-encoding.json"
+    json_file.write_bytes(b"\xff\xfe")
+
+    with pytest.raises(ValueError, match="Invalid JSON"):
+        load_split_records(json_file)
+
+
 # ============================================================
 # ALL SPLIT FILES TESTS
 # ============================================================

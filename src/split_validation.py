@@ -116,7 +116,7 @@ def load_split_records(split_path):
         with open(path, "r", encoding="utf-8") as file:
             records = json.load(file)
 
-    except json.JSONDecodeError as error:
+    except (json.JSONDecodeError, UnicodeDecodeError) as error:
         raise ValueError(
             f"Invalid JSON in split file: {path}"
         ) from error
