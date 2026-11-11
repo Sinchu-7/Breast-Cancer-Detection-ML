@@ -17,7 +17,7 @@ THRESHOLDS = np.arange(0.20, 0.81, 0.05)
 
 def analyze_thresholds(true_labels, probabilities):
 
-    true_labels = np.asarray(true_labels).astype(int)
+    true_labels = np.asarray(true_labels)
     probabilities = np.asarray(probabilities).reshape(-1)
 
     if len(true_labels) != len(probabilities):
@@ -28,8 +28,13 @@ def analyze_thresholds(true_labels, probabilities):
     if len(true_labels) == 0:
         raise ValueError("Input data cannot be empty.")
 
-    if not np.isin(true_labels, [0, 1]).all():
+    if (
+        np.issubdtype(true_labels.dtype, np.bool_)
+        or not np.isin(true_labels, [0, 1]).all()
+    ):
         raise ValueError("Labels must contain only 0 and 1.")
+
+    true_labels = true_labels.astype(int)
 
     if not np.isfinite(probabilities).all():
         raise ValueError("Probabilities must be finite.")

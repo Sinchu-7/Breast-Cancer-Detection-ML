@@ -1,5 +1,6 @@
 
 import numpy as np
+import pytest
 
 from src.threshold_analysis import analyze_thresholds
 
@@ -70,3 +71,15 @@ def test_threshold_analysis_confusion_matrix():
         [1, 1],
         [1, 1],
     ]
+
+
+def test_threshold_analysis_rejects_fractional_labels():
+
+    labels = np.array([0, 0.8, 1])
+    probabilities = np.array([0.1, 0.5, 0.9])
+
+    with pytest.raises(
+        ValueError,
+        match="Labels must contain only 0 and 1",
+    ):
+        analyze_thresholds(labels, probabilities)
