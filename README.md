@@ -288,7 +288,7 @@ The frontend is served at `http://127.0.0.1:5173` and the API at `http://127.0.0
 
 ## 🖥️ Application Modules
 
-- **Sign in:** Enter any valid email address and a non-empty password to open the demo workspace. This is a front-end-only flow: no credentials are sent to the backend or saved, and it does not provide account authentication.
+- **Sign in and profile:** Enter any valid email address and a non-empty password to open the demo workspace. The top-right profile menu shows the email-derived display name and account details, and provides sign-out. This is a front-end-only demo flow: credentials are not sent to the backend or saved, and the menu does not provide account authentication.
 - **Overview:** Dataset context and previously recorded model evaluation metrics.
 - **Image analysis:** Upload a histopathology image and request a model classification.
 - **Model & methods:** Review model details, validation metrics, and limitations.
