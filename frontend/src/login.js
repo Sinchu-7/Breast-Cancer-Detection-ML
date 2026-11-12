@@ -63,12 +63,12 @@ export function loginPage() {
             <p>Enter any email and password to open the demo workspace.</p>
           </div>
 
-          <div class="demo-notice" id="demo-notice">
+          <div class="demo-notice" id="demo-notice" role="note">
             <strong>Demo sign-in</strong>
             <span>No account is verified. Your credentials are not sent or saved.</span>
           </div>
 
-          <form class="login-form" id="login-form">
+          <form class="login-form" id="login-form" aria-describedby="demo-notice">
             <label for="login-email">Email address</label>
             <input id="login-email" name="email" type="email" autocomplete="email" placeholder="you@example.com" required />
 
@@ -77,7 +77,7 @@ export function loginPage() {
             </div>
             <div class="login-password-field">
               <input id="login-password" name="password" type="password" autocomplete="current-password" placeholder="Enter any password" required />
-              <button class="password-toggle" type="button" data-action="toggle-password" aria-label="Show password" aria-pressed="false">Show</button>
+              <button class="password-toggle" type="button" data-action="toggle-password" aria-controls="login-password" aria-label="Show password" aria-pressed="false">Show</button>
             </div>
 
             <button class="button button-primary login-submit" type="submit">
