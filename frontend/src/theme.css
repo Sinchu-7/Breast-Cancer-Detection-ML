@@ -557,3 +557,33 @@ body {
 .result-disclaimer {
   border-color: #37313b;
 }
+
+.model-intro {
+  border-color: #44363f;
+  background:
+    radial-gradient(ellipse at 100% 0%, #72444c30, transparent 57%),
+    linear-gradient(115deg, #211e27, #2b2028);
+  box-shadow: inset 0 1px #ffffff08;
+}
+
+.model-badge {
+  border-color: #5a424c;
+  background: #30232c;
+  color: #f0a071;
+}
+
+.model-intro h2 {
+  color: #f3edf1;
+}
+
+.model-intro p {
+  color: #bdb1bd;
+}
+
+.validation-stat {
+  border-color: #37313b;
+}
+
+.page-footer span:last-child {
+  color: #c28d79;
+}
