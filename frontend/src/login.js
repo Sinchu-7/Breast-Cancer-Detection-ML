@@ -1,3 +1,5 @@
+import "./login.css";
+
 export function loginPage() {
   return `
     <main class="login-page">
