@@ -130,3 +130,40 @@ body {
   background: #f08a70;
   box-shadow: 0 0 0 3px #f08a7020;
 }
+
+.eyebrow,
+.section-kicker,
+.hero-kicker {
+  color: #aa9eac;
+}
+
+.eyebrow-line {
+  width: 23px;
+  background: linear-gradient(90deg, #e98d54, #bb6675);
+  box-shadow: 0 0 12px #e98d5440;
+}
+
+.section-heading h2,
+.panel-heading h2,
+.detail-panel h2 {
+  color: #f1eaf0;
+}
+
+.section-aside,
+.metric-index {
+  color: #948a98;
+}
+
+.page-title {
+  color: #f5eef3;
+}
+
+.page-subtitle {
+  color: #aaa1ac;
+}
+
+.protocol-tag {
+  border-color: #413844;
+  background: #1c1921;
+  color: #c3b9c4;
+}
