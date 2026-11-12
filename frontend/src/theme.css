@@ -354,3 +354,33 @@ body {
 .threshold-card p {
   color: #b7acb7;
 }
+
+.page-title-row {
+  border-bottom: 1px solid #302c35;
+  padding-bottom: 18px;
+}
+
+.panel-heading h2,
+.detail-panel h2 {
+  color: #f2ebf0;
+}
+
+.analysis-layout {
+  gap: 16px;
+}
+
+.upload-panel {
+  background:
+    radial-gradient(ellipse at 92% 0%, #3825302b, transparent 40%),
+    linear-gradient(145deg, #201d26, #1a1920);
+}
+
+.panel-heading .section-kicker,
+.detail-panel .section-kicker {
+  color: #b49ba9;
+}
+
+.page-footer {
+  border-color: #302c35;
+  color: #a49aa6;
+}
