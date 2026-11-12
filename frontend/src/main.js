@@ -122,6 +122,10 @@ function shell(content) {
                   <span>Workspace</span>
                   <strong>Tissue Research</strong>
                 </div>
+                <div class="profile-detail-row">
+                  <span>Account</span>
+                  <strong class="profile-demo-badge">Demo account</strong>
+                </div>
               </section>
             </div>
           </div>
