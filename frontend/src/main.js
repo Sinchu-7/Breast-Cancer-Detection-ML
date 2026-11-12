@@ -364,6 +364,19 @@ function bindNavigation() {
   });
 }
 
+function bindProfileDismissal() {
+  document.addEventListener("click", (event) => {
+    if (!state.profileOpen) return;
+    const profileMenu = app.querySelector(".profile-menu-container");
+    if (profileMenu?.contains(event.target)) return;
+    state.profileOpen = false;
+    const dropdown = app.querySelector("#profile-dropdown");
+    const trigger = app.querySelector("[data-action='toggle-profile']");
+    if (dropdown) dropdown.hidden = true;
+    trigger?.setAttribute("aria-expanded", "false");
+  });
+}
+
 function setFile(file) {
   state.error = "";
   state.result = null;
@@ -464,4 +477,5 @@ async function checkService() {
 }
 
 render();
+bindProfileDismissal();
 checkService();
