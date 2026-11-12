@@ -66,3 +66,34 @@ body {
   color: #f2a578;
   box-shadow: inset 2px 0 #e98d54;
 }
+
+.sidebar-label {
+  color: #77717d;
+}
+
+.sidebar-note {
+  border-color: #3a3139;
+  background: linear-gradient(145deg, #221d26, #1d1a21);
+  box-shadow: inset 0 1px #ffffff08;
+}
+
+.note-icon {
+  background: #39282e;
+  color: #f0a477;
+}
+
+.sidebar-note p,
+.sidebar-profile small,
+.profile-dots {
+  color: #9c939f;
+}
+
+.sidebar-profile {
+  border-color: #302c35;
+}
+
+.profile-avatar,
+.header-avatar {
+  background: #342d38;
+  color: #e6d9e3;
+}
