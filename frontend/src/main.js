@@ -282,6 +282,7 @@ function bindLogin() {
   form.addEventListener("submit", (event) => {
     event.preventDefault();
     if (!form.reportValidity()) return;
+    state.profileEmail = form.querySelector("#login-email").value.trim();
     state.workspaceEntered = true;
     render();
   });
