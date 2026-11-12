@@ -115,8 +115,12 @@ function shell(content) {
                   <span class="profile-dropdown-avatar">${escapeHtml(profileInitials())}</span>
                   <div>
                     <strong>${escapeHtml(profileDisplayName())}</strong>
-                    <span>Researcher</span>
+                    <span class="profile-dropdown-email">${escapeHtml(state.profileEmail)}</span>
                   </div>
+                </div>
+                <div class="profile-detail-row">
+                  <span>Workspace</span>
+                  <strong>Tissue Research</strong>
                 </div>
               </section>
             </div>
