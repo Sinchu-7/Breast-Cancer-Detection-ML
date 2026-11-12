@@ -21,6 +21,29 @@ body {
     var(--canvas);
 }
 
+html {
+  color-scheme: dark;
+  scrollbar-color: #514653 #17151c;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #17151c;
+}
+
+::-webkit-scrollbar-thumb {
+  border: 2px solid #17151c;
+  border-radius: 8px;
+  background: #514653;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #766477;
+}
+
 .main {
   min-height: 100vh;
   background:
@@ -627,5 +650,16 @@ a:focus-visible,
 @media (prefers-reduced-motion: reduce) {
   .metric-card:hover {
     transform: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .hero-art {
+    border-top: 1px solid #55404b;
+    border-left: 0;
+  }
+
+  .sidebar {
+    box-shadow: 8px 0 24px #05040830;
   }
 }
