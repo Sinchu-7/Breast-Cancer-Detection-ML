@@ -258,6 +258,15 @@ function render() {
 
 function bindLogin() {
   const form = app.querySelector("#login-form");
+  const password = form.querySelector("#login-password");
+  const passwordToggle = form.querySelector("[data-action='toggle-password']");
+  passwordToggle.addEventListener("click", () => {
+    const showPassword = password.type === "password";
+    password.type = showPassword ? "text" : "password";
+    passwordToggle.textContent = showPassword ? "Hide" : "Show";
+    passwordToggle.setAttribute("aria-label", `${showPassword ? "Hide" : "Show"} password`);
+    passwordToggle.setAttribute("aria-pressed", String(showPassword));
+  });
   form.addEventListener("submit", (event) => {
     event.preventDefault();
     if (!form.reportValidity()) return;

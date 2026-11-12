@@ -77,7 +77,7 @@ export function loginPage() {
             </div>
             <div class="login-password-field">
               <input id="login-password" name="password" type="password" autocomplete="current-password" placeholder="Enter any password" required />
-              <button class="password-toggle" type="button" data-action="toggle-password">Show</button>
+              <button class="password-toggle" type="button" data-action="toggle-password" aria-label="Show password" aria-pressed="false">Show</button>
             </div>
 
             <button class="button button-primary login-submit" type="submit">
