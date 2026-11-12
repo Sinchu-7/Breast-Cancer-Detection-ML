@@ -7,6 +7,7 @@ const app = document.querySelector("#app");
 
 const state = {
   workspaceEntered: false,
+  profileEmail: "",
   view: "overview",
   file: null,
   previewUrl: "",
