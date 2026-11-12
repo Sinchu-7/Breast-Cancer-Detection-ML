@@ -1,10 +1,12 @@
 import "./style.css";
 import "./theme.css";
+import { loginPage } from "./login.js";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
 const app = document.querySelector("#app");
 
 const state = {
+  authenticated: false,
   view: "overview",
   file: null,
   previewUrl: "",
@@ -239,6 +241,11 @@ function formatBytes(bytes) {
 }
 
 function render() {
+  if (!state.authenticated) {
+    app.innerHTML = loginPage();
+    return;
+  }
+
   const content = state.view === "analyze"
     ? analyzePage()
     : state.view === "model"
