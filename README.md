@@ -32,7 +32,7 @@ The system uses a pretrained **MobileNetV2** model to extract image features and
 - JSON split-file integrity validation
 - Structured logging for dataset operations
 - Automated unit testing
-- Interactive Streamlit web application
+- Interactive Vite frontend and FastAPI prediction service
 - Model performance dashboard
 
 ## 🧰 Technologies Used
@@ -46,7 +46,7 @@ The system uses a pretrained **MobileNetV2** model to extract image features and
 | Machine Learning | Scikit-learn |
 | Image Processing | Pillow |
 | Visualization | Matplotlib, Seaborn |
-| Web Application | Streamlit |
+| Web Application | Vite, FastAPI |
 | Testing | Pytest |
 | Logging | Python Logging |
 | Version Control | Git, GitHub |
@@ -94,7 +94,7 @@ The project follows these steps:
 5. Model training with class weights.
 6. Model evaluation using test data.
 7. Fine-tuning selected pretrained layers.
-8. Deployment using Streamlit.
+8. Deployment using a Vite frontend and FastAPI prediction service.
 
 Patient-wise splitting helps prevent images from the same patient appearing across different dataset splits.
 
@@ -172,10 +172,15 @@ The original MobileNetV2 model achieved the following results on the held-out te
 
 ```text
 Breast-Cancer-Detection-ML/
-│
-├── app/
-│   └── app.py
-│
+├── backend/
+│   ├── main.py
+│   └── package.json
+├── frontend/
+│   ├── index.html
+│   ├── package.json
+│   └── src/
+│       ├── main.js
+│       └── style.css
 ├── src/
 │   ├── load_dataset.py
 │   ├── inspect_dataset.py
@@ -193,6 +198,7 @@ Breast-Cancer-Detection-ML/
 │
 ├── notebooks/
 ├── tests/
+│   ├── test_backend_api.py
 │   ├── test_image_dataset.py
 │   ├── test_dataset_statistics.py
 │   └── test_split_validation.py
@@ -260,20 +266,30 @@ python -m src.train_image_model
 python -m src.evaluate_image_model
 ```
 
-### 9. Run the Streamlit application
+### 9. Run the frontend and backend
+
+In one terminal, install the frontend dependencies and start Vite:
 
 ```bash
-streamlit run app/app.py
+cd frontend
+npm install
+npm run dev
 ```
 
-Open the local URL displayed in your terminal to use the application.
+In a second terminal, from the repository root, activate the Python environment created above and run:
+
+```bash
+cd backend
+npm run dev
+```
+
+The frontend is served at `http://127.0.0.1:5173` and the API at `http://127.0.0.1:8000`. The trained model file must be available at `models/breast_histopathology_mobilenetv2.keras` for predictions; model weights are not included in this repository.
 
 ## 🖥️ Application Modules
 
-- **Home:** Project introduction and overview.
-- **Image Prediction:** Upload a histopathology image for classification.
-- **Model Dashboard:** View model evaluation metrics.
-- **About:** Information about the project and technologies.
+- **Overview:** Dataset context and previously recorded model evaluation metrics.
+- **Image analysis:** Upload a histopathology image and request a model classification.
+- **Model & methods:** Review model details, validation metrics, and limitations.
 
 ## 🔮 Future Improvements
 
