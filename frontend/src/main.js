@@ -141,10 +141,12 @@ function shell(content) {
       </main>
     </div>`;
   bindNavigation();
-    app.querySelector("[data-action='toggle-profile']").addEventListener("click", () => {
+    const profileTrigger = app.querySelector("[data-action='toggle-profile']");
+    const profileDropdown = app.querySelector("#profile-dropdown");
+    profileTrigger.addEventListener("click", () => {
       state.profileOpen = !state.profileOpen;
-      render();
-      app.querySelector("[data-action='toggle-profile']").focus();
+      profileDropdown.hidden = !state.profileOpen;
+      profileTrigger.setAttribute("aria-expanded", String(state.profileOpen));
     });
 }
 
