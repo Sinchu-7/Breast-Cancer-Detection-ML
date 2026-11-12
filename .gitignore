@@ -28,6 +28,8 @@ models/*.h5
 
 # Generated evaluation reports
 reports/
+node_modules/
+frontend/dist/
 
 
 # Virtual Environments
