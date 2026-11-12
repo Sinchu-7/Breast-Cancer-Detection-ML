@@ -200,3 +200,27 @@ body {
 .hero-caption {
   color: #aaa1ac;
 }
+
+.hero-art {
+  border-left: 1px solid #55404b;
+  background:
+    radial-gradient(ellipse at 50% 45%, #694755 0, #3e303d 45%, #29232e 100%);
+}
+
+.tissue-art {
+  filter: drop-shadow(0 13px 22px #09070c99);
+}
+
+.art-label span,
+.art-meta {
+  color: #b7a4b3;
+}
+
+.art-label strong {
+  color: #f0d9d4;
+}
+
+.caption-dot {
+  background: #e98d54;
+  box-shadow: 0 0 9px #e98d5480;
+}
