@@ -357,6 +357,7 @@ function bindNavigation() {
   app.querySelectorAll("[data-view]").forEach((button) => {
     button.addEventListener("click", (event) => {
       event.preventDefault();
+      state.profileOpen = false;
       state.view = button.dataset.view;
       render();
       window.scrollTo({ top: 0, behavior: "smooth" });
