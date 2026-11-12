@@ -97,3 +97,36 @@ body {
   background: #342d38;
   color: #e6d9e3;
 }
+
+.breadcrumb {
+  color: #a49ca7;
+}
+
+.breadcrumb i {
+  color: #625b68;
+}
+
+.breadcrumb strong {
+  color: #e8e1e7;
+}
+
+.topbar-divider {
+  background: #3a3540;
+}
+
+.service-indicator {
+  color: #b5adb7;
+}
+
+.service-indicator.ready i,
+.method-status i {
+  background: #83b894;
+  box-shadow: 0 0 0 3px #83b89420;
+}
+
+.service-indicator.offline i,
+.service-indicator.unavailable i,
+.method-status.offline i {
+  background: #f08a70;
+  box-shadow: 0 0 0 3px #f08a7020;
+}
