@@ -6,7 +6,7 @@ const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
 const app = document.querySelector("#app");
 
 const state = {
-  authenticated: false,
+  workspaceEntered: false,
   view: "overview",
   file: null,
   previewUrl: "",
@@ -241,8 +241,9 @@ function formatBytes(bytes) {
 }
 
 function render() {
-  if (!state.authenticated) {
+  if (!state.workspaceEntered) {
     app.innerHTML = loginPage();
+    bindLogin();
     return;
   }
 
@@ -253,6 +254,16 @@ function render() {
       : overviewPage();
   shell(content);
   if (state.view === "analyze") bindUploader();
+}
+
+function bindLogin() {
+  const form = app.querySelector("#login-form");
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    if (!form.reportValidity()) return;
+    state.workspaceEntered = true;
+    render();
+  });
 }
 
 function bindNavigation() {
