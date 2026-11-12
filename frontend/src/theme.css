@@ -37,3 +37,32 @@ body {
 .topbar {
   border-color: #302c35;
 }
+
+.brand {
+  color: #f5eef3;
+}
+
+.brand-mark {
+  background: linear-gradient(145deg, #eb9868, #c56850);
+  color: #20151b;
+  box-shadow: 0 5px 16px #db795343;
+}
+
+.brand-mark span {
+  color: #fff3e9;
+}
+
+.nav-link {
+  color: #aaa4af;
+}
+
+.nav-link:hover {
+  background: #24202a;
+  color: #f4edf1;
+}
+
+.nav-link.active {
+  background: linear-gradient(100deg, #422b35, #33252c);
+  color: #f2a578;
+  box-shadow: inset 2px 0 #e98d54;
+}
