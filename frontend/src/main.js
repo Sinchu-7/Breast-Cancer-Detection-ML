@@ -41,6 +41,15 @@ function navButton(view, label) {
   </button>`;
 }
 
+function profileDisplayName() {
+  const localPart = state.profileEmail.split("@", 1)[0].replace(/[._+-]+/g, " ").trim();
+  if (!localPart) return "Researcher";
+  return localPart
+    .split(/\s+/)
+    .map((part) => part.charAt(0).toLocaleUpperCase() + part.slice(1))
+    .join(" ");
+}
+
 function shell(content) {
   app.innerHTML = `
     <div class="workspace">
