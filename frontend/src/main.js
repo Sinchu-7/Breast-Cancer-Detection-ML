@@ -60,16 +60,6 @@ function profileInitials() {
     .toLocaleUpperCase();
 }
 
-function escapeHtml(value) {
-  return value.replace(/[&<>"']/g, (character) => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#39;",
-  })[character]);
-}
-
 function shell(content) {
   app.innerHTML = `
     <div class="workspace">
