@@ -24,6 +24,7 @@ const icons = {
   upload: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m-5 5 5-5 5 5"/><path d="M4 16v4h16v-4"/></svg>',
   check: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg>',
   shield: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z"/><path d="m9 12 2 2 4-4"/></svg>',
+  logout: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/><path d="M12 3h6a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-6"/></svg>',
 };
 
 const metricCards = [
@@ -62,7 +63,7 @@ function shell(content) {
         <div class="sidebar-profile">
           <span class="profile-avatar">TR</span>
           <span><strong>Research portal</strong><small>Educational prototype</small></span>
-          <span class="profile-dots">···</span>
+          <button class="sign-out-button" type="button" data-action="sign-out" aria-label="Sign out" title="Sign out">${icons.logout}</button>
         </div>
       </aside>
 
@@ -253,6 +254,16 @@ function render() {
       ? modelPage()
       : overviewPage();
   shell(content);
+  app.querySelector("[data-action='sign-out']").addEventListener("click", () => {
+    if (state.previewUrl) URL.revokeObjectURL(state.previewUrl);
+    state.workspaceEntered = false;
+    state.view = "overview";
+    state.file = null;
+    state.previewUrl = "";
+    state.result = null;
+    state.error = "";
+    render();
+  });
   if (state.view === "analyze") bindUploader();
 }
 
