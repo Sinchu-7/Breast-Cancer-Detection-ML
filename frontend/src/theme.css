@@ -20,3 +20,20 @@ body {
     radial-gradient(ellipse at 75% -18%, #39253180, transparent 47%),
     var(--canvas);
 }
+
+.main {
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse at 81% 0%, #2c20264d, transparent 38%),
+    #111015;
+}
+
+.sidebar {
+  background: #17151c;
+  border-color: #302c35;
+  box-shadow: 12px 0 34px #05040826;
+}
+
+.topbar {
+  border-color: #302c35;
+}
