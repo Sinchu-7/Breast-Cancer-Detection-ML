@@ -252,3 +252,73 @@
   width: 16px;
   height: 16px;
 }
+
+@media (max-width: 860px) {
+  .login-page {
+    padding-right: 28px;
+    padding-left: 28px;
+  }
+
+  .login-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(330px, 390px);
+    gap: 34px;
+  }
+
+  .login-panel {
+    padding-right: 27px;
+    padding-left: 27px;
+  }
+}
+
+@media (max-width: 720px) {
+  .login-page {
+    padding: 22px 20px 34px;
+  }
+
+  .login-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 25px;
+    min-height: auto;
+    margin-top: 25px;
+  }
+
+  .login-panel {
+    order: -1;
+    width: min(100%, 480px);
+    justify-self: center;
+  }
+
+  .login-intro {
+    width: min(100%, 560px);
+    justify-self: center;
+  }
+
+  .login-specimen {
+    padding: 17px 18px 0;
+  }
+
+  .login-intro-copy {
+    margin-right: -18px;
+    margin-left: -18px;
+    padding: 18px 20px 22px;
+  }
+
+  .login-intro-copy h1 {
+    font-size: clamp(29px, 8vw, 40px);
+  }
+}
+
+@media (max-width: 420px) {
+  .login-page {
+    padding-right: 14px;
+    padding-left: 14px;
+  }
+
+  .login-panel {
+    padding: 28px 20px 23px;
+  }
+
+  .login-specimen svg {
+    min-height: 170px;
+  }
+}
