@@ -160,6 +160,119 @@ html {
   white-space: nowrap;
 }
 
+.profile-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  z-index: 8;
+  width: min(310px, calc(100vw - 32px));
+  padding: 16px;
+  border: 1px solid #443a47;
+  border-radius: 8px;
+  background:
+    radial-gradient(ellipse at 100% 0%, #482b3820, transparent 56%),
+    #1d1a22;
+  box-shadow: 0 16px 42px #05040880, inset 0 1px #ffffff08;
+}
+
+.profile-dropdown[hidden] {
+  display: none;
+}
+
+.profile-dropdown-heading {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding-bottom: 14px;
+}
+
+.profile-dropdown-avatar {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid #684b59;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #503444, #332733);
+  color: #f3b18a;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.profile-dropdown-heading > div {
+  display: grid;
+  min-width: 0;
+  gap: 5px;
+}
+
+.profile-dropdown-heading strong {
+  overflow: hidden;
+  color: #f2ebf0;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.profile-dropdown-email {
+  overflow: hidden;
+  color: #aaa1ac;
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.profile-detail-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 0;
+  border-top: 1px solid #34303a;
+  color: #aaa1ac;
+  font-size: 10px;
+}
+
+.profile-detail-row strong {
+  color: #e8e1e7;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.profile-demo-badge {
+  padding: 4px 7px;
+  border: 1px solid #5a424c;
+  border-radius: 20px;
+  background: #30232c;
+  color: #f0a071 !important;
+}
+
+.profile-sign-out {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 9px;
+  margin-top: 7px;
+  padding: 10px 8px;
+  border: 1px solid #493740;
+  border-radius: 5px;
+  background: #282029;
+  color: #f1b18d;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.profile-sign-out:hover {
+  border-color: #775144;
+  background: #34242a;
+}
+
+.profile-sign-out svg {
+  width: 15px;
+  height: 15px;
+}
+
 .breadcrumb {
   color: #a49ca7;
 }
