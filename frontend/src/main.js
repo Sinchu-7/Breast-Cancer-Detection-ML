@@ -258,6 +258,7 @@ function render() {
   app.querySelector("[data-action='sign-out']").addEventListener("click", () => {
     if (state.previewUrl) URL.revokeObjectURL(state.previewUrl);
     state.workspaceEntered = false;
+    state.profileEmail = "";
     state.view = "overview";
     state.file = null;
     state.previewUrl = "";
