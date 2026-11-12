@@ -226,3 +226,29 @@
   line-height: 1.6;
   text-align: center;
 }
+
+.sign-out-button {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 auto;
+  place-items: center;
+  margin-left: auto;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  background: transparent;
+  color: #aaa1ac;
+  cursor: pointer;
+}
+
+.sign-out-button:hover {
+  border-color: #4a3e49;
+  background: #28222c;
+  color: #f0a071;
+}
+
+.sign-out-button svg {
+  width: 16px;
+  height: 16px;
+}
