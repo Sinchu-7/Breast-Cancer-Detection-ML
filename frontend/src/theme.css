@@ -288,3 +288,46 @@ body {
 .metric-card:nth-child(4) .metric-dot {
   background: #d7a29a;
 }
+
+.performance-card,
+.panel {
+  border-color: #37333d;
+  background: linear-gradient(145deg, #1e1c24, #19181f);
+  box-shadow: inset 0 1px #ffffff08, 0 8px 26px #05040816;
+}
+
+.data-badge {
+  border-color: #403a44;
+  background: #24212a;
+  color: #b7adba;
+}
+
+.card-description {
+  color: #aaa1ac;
+}
+
+.performance-row {
+  color: #bcb3bd;
+}
+
+.performance-row strong {
+  color: #eee7ed;
+}
+
+.bar-track {
+  background: #37323c;
+}
+
+.bar-track i {
+  background: linear-gradient(90deg, #bd6473, #ed995f);
+  box-shadow: 0 0 9px #dc805538;
+}
+
+.performance-row:nth-child(even) .bar-track i {
+  background: linear-gradient(90deg, #72627c, #b995bd);
+  box-shadow: 0 0 9px #b995bd30;
+}
+
+.fine-print {
+  color: #a59ba7;
+}
