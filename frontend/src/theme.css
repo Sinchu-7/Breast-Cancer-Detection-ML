@@ -384,3 +384,63 @@ body {
   border-color: #302c35;
   color: #a49aa6;
 }
+
+.dropzone {
+  border-color: #554650;
+  background:
+    radial-gradient(ellipse at 50% 30%, #54374328, transparent 70%),
+    #17151c;
+  color: #c9beca;
+}
+
+.dropzone:hover,
+.dropzone.dragging {
+  border-color: #ed9866;
+  background:
+    radial-gradient(ellipse at 50% 30%, #7a443b36, transparent 70%),
+    #20191f;
+  box-shadow: inset 0 0 35px #e98d540c, 0 0 0 3px #e98d5410;
+}
+
+.dropzone.has-file {
+  border-color: #49404a;
+  background: #19171e;
+}
+
+.upload-symbol {
+  border-color: #51414a;
+  background: #27212a;
+  color: #f0a071;
+  box-shadow: 0 5px 16px #0a080c55;
+}
+
+.dropzone > strong {
+  color: #f1eaf0;
+}
+
+.dropzone > span {
+  color: #b7adba;
+}
+
+.dropzone > small {
+  color: #9c939f;
+}
+
+.preview-frame {
+  border-color: #4a3e49;
+  background: #211d25;
+}
+
+.remove-file {
+  border-color: #51444f;
+  background: #28222c;
+  color: #f3edf1;
+}
+
+.file-meta strong {
+  color: #f0e9ef;
+}
+
+.file-meta span {
+  color: #a9a0ab;
+}
