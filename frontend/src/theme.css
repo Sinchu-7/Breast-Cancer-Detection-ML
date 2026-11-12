@@ -510,3 +510,50 @@ body {
 .inline-error {
   color: #ff9a87;
 }
+
+.result-card {
+  border-color: #413743;
+  background:
+    radial-gradient(ellipse at 100% 0%, #482b3830, transparent 56%),
+    linear-gradient(145deg, #211e27, #19181f);
+  box-shadow: inset 0 1px #ffffff09, 0 12px 32px #08070b30;
+}
+
+.result-heading h3,
+.result-numbers strong {
+  color: #f3edf1;
+}
+
+.result-mark {
+  background: #26372e;
+  color: #9bd0aa;
+}
+
+.result-card.malignant .result-mark {
+  background: #462a2b;
+  color: #ffad7b;
+}
+
+.result-numbers span,
+.score-caption,
+.result-disclaimer {
+  color: #aea4b0;
+}
+
+.score-track {
+  background: #39343e;
+}
+
+.score-track i {
+  background: linear-gradient(90deg, #b96678, #ee9860);
+  box-shadow: 0 0 12px #dc805538;
+}
+
+.score-track > span {
+  background: #f6edf2;
+  box-shadow: 0 0 9px #f6edf280;
+}
+
+.result-disclaimer {
+  border-color: #37313b;
+}
