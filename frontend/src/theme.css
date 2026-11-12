@@ -138,6 +138,18 @@ html {
   cursor: pointer;
 }
 
+.header-profile:hover,
+.header-profile[aria-expanded="true"] {
+  border-color: #413844;
+  background: #24202a;
+}
+
+.header-profile:focus-visible,
+.profile-sign-out:focus-visible {
+  outline: 3px solid #e98d54;
+  outline-offset: 3px;
+}
+
 .header-profile-copy {
   display: grid;
   gap: 3px;
@@ -271,6 +283,16 @@ html {
 .profile-sign-out svg {
   width: 15px;
   height: 15px;
+}
+
+@media (max-width: 640px) {
+  .header-profile-copy {
+    display: none;
+  }
+
+  .header-profile {
+    padding: 3px;
+  }
 }
 
 .breadcrumb {
