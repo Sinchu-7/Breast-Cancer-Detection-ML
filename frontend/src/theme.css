@@ -121,6 +121,45 @@ html {
   color: #e6d9e3;
 }
 
+.profile-menu-container {
+  position: relative;
+}
+
+.header-profile {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 4px 8px 4px 5px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  background: transparent;
+  color: #f3edf1;
+  text-align: left;
+  cursor: pointer;
+}
+
+.header-profile-copy {
+  display: grid;
+  gap: 3px;
+  max-width: 180px;
+}
+
+.header-profile-copy strong {
+  overflow: hidden;
+  font-size: 10px;
+  font-weight: 650;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.header-profile-copy small {
+  overflow: hidden;
+  color: #9c939f;
+  font-size: 9px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .breadcrumb {
   color: #a49ca7;
 }
