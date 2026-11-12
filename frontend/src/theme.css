@@ -587,3 +587,45 @@ body {
 .page-footer span:last-child {
   color: #c28d79;
 }
+
+button:focus-visible,
+a:focus-visible,
+[tabindex]:focus-visible {
+  outline-color: #f0a071;
+  box-shadow: 0 0 0 4px #e98d5426;
+}
+
+.nav-link,
+.metric-card,
+.performance-card,
+.threshold-card,
+.panel {
+  transition:
+    border-color .2s ease,
+    background .2s ease,
+    box-shadow .2s ease,
+    transform .2s ease;
+}
+
+.metric-card:hover,
+.performance-card:hover,
+.threshold-card:hover,
+.panel:hover {
+  border-color: #50404c;
+  box-shadow: 0 11px 30px #08070b30, inset 0 1px #ffffff0a;
+}
+
+.metric-card:hover {
+  transform: translateY(-2px);
+}
+
+::selection {
+  background: #d7785a88;
+  color: #fff7f2;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .metric-card:hover {
+    transform: none;
+  }
+}
