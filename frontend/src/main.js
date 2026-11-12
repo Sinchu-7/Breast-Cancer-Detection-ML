@@ -50,6 +50,15 @@ function profileDisplayName() {
     .join(" ");
 }
 
+function profileInitials() {
+  return profileDisplayName()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part.charAt(0))
+    .join("")
+    .toLocaleUpperCase();
+}
+
 function shell(content) {
   app.innerHTML = `
     <div class="workspace">
