@@ -102,7 +102,13 @@ function shell(content) {
           <div class="topbar-right">
             <span class="service-indicator ${state.service}" role="status"><i></i>${state.service === "ready" ? "Model available" : state.service === "unavailable" ? "Model unavailable" : state.service === "offline" ? "Service offline" : "Checking service"}</span>
             <span class="topbar-divider"></span>
-            <span class="header-avatar">TR</span>
+            <div class="header-profile">
+              <span class="header-avatar">${escapeHtml(profileInitials())}</span>
+              <span class="header-profile-copy">
+                <strong>${escapeHtml(profileDisplayName())}</strong>
+                <small>${escapeHtml(state.profileEmail)}</small>
+              </span>
+            </div>
           </div>
         </header>
         ${content}
