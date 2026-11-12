@@ -224,3 +224,30 @@ body {
   background: #e98d54;
   box-shadow: 0 0 9px #e98d5480;
 }
+
+.button-primary {
+  background: linear-gradient(110deg, #ed995f, #d5754c);
+  color: #21151a;
+  box-shadow: 0 7px 18px #d5754c2b, inset 0 1px #ffffff42;
+}
+
+.button-primary:hover:not(:disabled) {
+  background: linear-gradient(110deg, #f3a978, #e48757);
+  box-shadow: 0 9px 23px #d5754c40, inset 0 1px #ffffff4a;
+}
+
+.button-primary:focus-visible,
+.inline-button:focus-visible,
+.text-button:focus-visible {
+  outline-color: #f0a071;
+}
+
+.text-button,
+.inline-button {
+  color: #f0a071;
+}
+
+.text-button:hover,
+.inline-button:hover {
+  color: #ffc198;
+}
