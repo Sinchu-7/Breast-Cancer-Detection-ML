@@ -1,0 +1,22 @@
+:root {
+  color-scheme: dark;
+  color: #f2edf1;
+  background: #111015;
+  --ink: #f2edf1;
+  --muted: #aaa1ac;
+  --soft: #77717d;
+  --line: #34303a;
+  --surface: #1b1921;
+  --canvas: #111015;
+  --silver: #777783;
+  --orange: #e98d54;
+  --orange-dark: #f1a06f;
+  --orange-soft: #33231f;
+}
+
+body {
+  color: var(--ink);
+  background:
+    radial-gradient(ellipse at 75% -18%, #39253180, transparent 47%),
+    var(--canvas);
+}

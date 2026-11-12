@@ -1,4 +1,5 @@
 import "./style.css";
+import "./theme.css";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
 const app = document.querySelector("#app");
@@ -105,21 +106,21 @@ function overviewPage() {
         <div class="hero-art" aria-hidden="true">
           <div class="art-label"><span>SPECIMEN</span><strong>BH-RESEARCH / 01</strong></div>
           <svg class="tissue-art" viewBox="0 0 440 330" fill="none">
-            <defs><clipPath id="slide"><rect x="38" y="28" width="364" height="268" rx="8"/></clipPath><linearGradient id="glass" x1="30" y1="25" x2="410" y2="310" gradientUnits="userSpaceOnUse"><stop stop-color="#E8C9BE"/><stop offset="1" stop-color="#9B706E"/></linearGradient></defs>
-            <rect x="25" y="17" width="390" height="296" rx="14" fill="#413735" stroke="#76635C"/>
+            <defs><clipPath id="slide"><rect x="38" y="28" width="364" height="268" rx="8"/></clipPath><linearGradient id="glass" x1="30" y1="25" x2="410" y2="310" gradientUnits="userSpaceOnUse"><stop stop-color="#DAB5AF"/><stop offset="1" stop-color="#76566C"/></linearGradient></defs>
+            <rect x="25" y="17" width="390" height="296" rx="14" fill="#302832" stroke="#5C4B5B"/>
             <rect x="38" y="28" width="364" height="268" rx="8" fill="url(#glass)"/>
             <g clip-path="url(#slide)" opacity=".93">
-              <path d="M16 162C45 112 78 132 95 94c17-39 49-41 74-8 24 33 46 28 67-8 21-37 52-41 77-7 25 35 60 17 96 4v239H12L16 162Z" fill="#B98480"/>
-              <path d="M36 143c27-37 48-5 70-41 19-30 47-18 54 11 9 38 40 33 62 1 17-25 34-28 45-3 16 37 40 40 61 10 20-30 43-14 66 8v109H31l5-95Z" fill="#E5B6A9"/>
-              <g fill="#815B69">
+              <path d="M16 162C45 112 78 132 95 94c17-39 49-41 74-8 24 33 46 28 67-8 21-37 52-41 77-7 25 35 60 17 96 4v239H12L16 162Z" fill="#A96779"/>
+              <path d="M36 143c27-37 48-5 70-41 19-30 47-18 54 11 9 38 40 33 62 1 17-25 34-28 45-3 16 37 40 40 61 10 20-30 43-14 66 8v109H31l5-95Z" fill="#DEA99F"/>
+              <g fill="#523B64">
                 <ellipse cx="70" cy="165" rx="12" ry="7" transform="rotate(-33 70 165)"/><ellipse cx="113" cy="132" rx="10" ry="6" transform="rotate(18 113 132)"/><ellipse cx="146" cy="188" rx="13" ry="8" transform="rotate(-26 146 188)"/><ellipse cx="193" cy="136" rx="10" ry="7" transform="rotate(27 193 136)"/><ellipse cx="222" cy="194" rx="14" ry="8" transform="rotate(-12 222 194)"/><ellipse cx="276" cy="148" rx="11" ry="7" transform="rotate(31 276 148)"/><ellipse cx="320" cy="184" rx="13" ry="7" transform="rotate(-29 320 184)"/><ellipse cx="359" cy="131" rx="10" ry="6" transform="rotate(22 359 131)"/>
                 <ellipse cx="94" cy="225" rx="11" ry="7" transform="rotate(22 94 225)"/><ellipse cx="174" cy="244" rx="13" ry="8" transform="rotate(-22 174 244)"/><ellipse cx="255" cy="233" rx="11" ry="6" transform="rotate(16 255 233)"/><ellipse cx="337" cy="244" rx="14" ry="8" transform="rotate(-31 337 244)"/>
               </g>
-              <g fill="#F1D2C7" opacity=".82"><circle cx="80" cy="91" r="22"/><circle cx="254" cy="89" r="18"/><circle cx="331" cy="104" r="24"/><circle cx="128" cy="260" r="18"/></g>
-              <path d="M39 201c49-27 79-2 111-28s47 8 82-2 47-38 79-19 57 17 94-7" stroke="#F7E5DC" stroke-width="8" stroke-linecap="round" opacity=".72"/>
+              <g fill="#F2D7CF" opacity=".85"><circle cx="80" cy="91" r="22"/><circle cx="254" cy="89" r="18"/><circle cx="331" cy="104" r="24"/><circle cx="128" cy="260" r="18"/></g>
+              <path d="M39 201c49-27 79-2 111-28s47 8 82-2 47-38 79-19 57 17 94-7" stroke="#F5DDD4" stroke-width="8" stroke-linecap="round" opacity=".72"/>
             </g>
-            <path d="M294 279h83" stroke="#62534E" stroke-width="2"/><path d="M294 275v8m83-8v8" stroke="#62534E" stroke-width="2"/>
-            <circle cx="362" cy="43" r="4" fill="#E88952"/><circle cx="376" cy="43" r="4" fill="#C6A69B"/>
+            <path d="M294 279h83" stroke="#D3BBC8" stroke-width="2"/><path d="M294 275v8m83-8v8" stroke="#D3BBC8" stroke-width="2"/>
+            <circle cx="362" cy="43" r="4" fill="#E98D54"/><circle cx="376" cy="43" r="4" fill="#D9B3AE"/>
           </svg>
           <div class="art-meta"><span>ILLUSTRATIVE TISSUE VIEW</span><span>40× — 400×</span></div>
         </div>
