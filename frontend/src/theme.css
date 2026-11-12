@@ -251,3 +251,40 @@ body {
 .inline-button:hover {
   color: #ffc198;
 }
+
+.metric-card {
+  border-color: #37333d;
+  background:
+    linear-gradient(145deg, #211e27, #1a1920 75%);
+  box-shadow: inset 0 1px #ffffff08, 0 6px 19px #05040812;
+}
+
+.metric-value {
+  color: #f3edf1;
+}
+
+.metric-label {
+  color: #d3cad3;
+}
+
+.metric-note {
+  color: #9c939f;
+}
+
+.metric-dot {
+  background: #e99062;
+  box-shadow: 0 0 9px #e990623f;
+}
+
+.metric-card:nth-child(2) .metric-dot {
+  background: #b694bc;
+  box-shadow: 0 0 9px #b694bc40;
+}
+
+.metric-card:nth-child(3) .metric-dot {
+  background: #8c8499;
+}
+
+.metric-card:nth-child(4) .metric-dot {
+  background: #d7a29a;
+}
