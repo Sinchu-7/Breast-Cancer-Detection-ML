@@ -444,3 +444,35 @@ body {
 .file-meta span {
   color: #a9a0ab;
 }
+
+.method-panel {
+  border-color: #3a3540;
+  background: linear-gradient(150deg, #211e27, #19181f);
+}
+
+.method-panel > .section-kicker {
+  color: #c4a3ab;
+}
+
+.method-row,
+.validation-stat {
+  border-color: #34303a;
+  color: #b7aeba;
+}
+
+.method-row strong,
+.validation-stat strong {
+  color: #eee7ed;
+}
+
+.method-status {
+  color: #c1b6c2;
+}
+
+.privacy-note {
+  color: #aaa1ac;
+}
+
+.privacy-note svg {
+  color: #c3a9b5;
+}
