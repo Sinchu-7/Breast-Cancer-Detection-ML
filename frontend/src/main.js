@@ -375,6 +375,15 @@ function bindProfileDismissal() {
     if (dropdown) dropdown.hidden = true;
     trigger?.setAttribute("aria-expanded", "false");
   });
+  document.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape" || !state.profileOpen) return;
+    state.profileOpen = false;
+    const dropdown = app.querySelector("#profile-dropdown");
+    const trigger = app.querySelector("[data-action='toggle-profile']");
+    if (dropdown) dropdown.hidden = true;
+    trigger?.setAttribute("aria-expanded", "false");
+    trigger?.focus();
+  });
 }
 
 function setFile(file) {
