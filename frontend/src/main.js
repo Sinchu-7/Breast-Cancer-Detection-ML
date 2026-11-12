@@ -110,7 +110,15 @@ function shell(content) {
                   <small>${escapeHtml(state.profileEmail)}</small>
                 </span>
               </button>
-              <section class="profile-dropdown" id="profile-dropdown" aria-label="Profile details" hidden></section>
+              <section class="profile-dropdown" id="profile-dropdown" aria-label="Profile details" hidden>
+                <div class="profile-dropdown-heading">
+                  <span class="profile-dropdown-avatar">${escapeHtml(profileInitials())}</span>
+                  <div>
+                    <strong>${escapeHtml(profileDisplayName())}</strong>
+                    <span>Researcher</span>
+                  </div>
+                </div>
+              </section>
             </div>
           </div>
         </header>
