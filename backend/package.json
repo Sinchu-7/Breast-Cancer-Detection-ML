@@ -1,0 +1,7 @@
+{
+  "name": "histology-research-backend",
+  "private": true,
+  "scripts": {
+    "dev": "python -m uvicorn backend.main:app --app-dir .. --reload --host 127.0.0.1 --port 8000"
+  }
+}
