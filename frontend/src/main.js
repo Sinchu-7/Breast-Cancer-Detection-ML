@@ -8,6 +8,7 @@ const app = document.querySelector("#app");
 const state = {
   workspaceEntered: false,
   profileEmail: "",
+  profileOpen: false,
   view: "overview",
   file: null,
   previewUrl: "",
@@ -92,7 +93,6 @@ function shell(content) {
         <div class="sidebar-profile">
           <span class="profile-avatar">TR</span>
           <span><strong>Research portal</strong><small>Educational prototype</small></span>
-          <button class="sign-out-button" type="button" data-action="sign-out" aria-label="Sign out" title="Sign out">${icons.logout}</button>
         </div>
       </aside>
 
@@ -103,14 +103,14 @@ function shell(content) {
             <span class="service-indicator ${state.service}" role="status"><i></i>${state.service === "ready" ? "Model available" : state.service === "unavailable" ? "Model unavailable" : state.service === "offline" ? "Service offline" : "Checking service"}</span>
             <span class="topbar-divider"></span>
             <div class="profile-menu-container">
-              <button class="header-profile" type="button" data-action="toggle-profile" aria-expanded="false" aria-controls="profile-dropdown">
+              <button class="header-profile" type="button" data-action="toggle-profile" aria-expanded="${state.profileOpen}" aria-controls="profile-dropdown">
                 <span class="header-avatar">${escapeHtml(profileInitials())}</span>
                 <span class="header-profile-copy">
                   <strong>${escapeHtml(profileDisplayName())}</strong>
                   <small>${escapeHtml(state.profileEmail)}</small>
                 </span>
               </button>
-              <section class="profile-dropdown" id="profile-dropdown" aria-label="Profile details" hidden>
+              <section class="profile-dropdown" id="profile-dropdown" aria-label="Profile details" ${state.profileOpen ? "" : "hidden"}>
                 <div class="profile-dropdown-heading">
                   <span class="profile-dropdown-avatar">${escapeHtml(profileInitials())}</span>
                   <div>
@@ -126,6 +126,9 @@ function shell(content) {
                   <span>Account</span>
                   <strong class="profile-demo-badge">Demo account</strong>
                 </div>
+                <button class="profile-sign-out" type="button" data-action="sign-out">
+                  ${icons.logout}<span>Sign out</span>
+                </button>
               </section>
             </div>
           </div>
@@ -138,6 +141,11 @@ function shell(content) {
       </main>
     </div>`;
   bindNavigation();
+    app.querySelector("[data-action='toggle-profile']").addEventListener("click", () => {
+      state.profileOpen = !state.profileOpen;
+      render();
+      app.querySelector("[data-action='toggle-profile']").focus();
+    });
 }
 
 function overviewPage() {
@@ -312,6 +320,7 @@ function render() {
     if (state.previewUrl) URL.revokeObjectURL(state.previewUrl);
     state.workspaceEntered = false;
     state.profileEmail = "";
+    state.profileOpen = false;
     state.view = "overview";
     state.file = null;
     state.previewUrl = "";
