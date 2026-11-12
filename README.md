@@ -33,6 +33,7 @@ The system uses a pretrained **MobileNetV2** model to extract image features and
 - Structured logging for dataset operations
 - Automated unit testing
 - Interactive Vite frontend and FastAPI prediction service
+- Demo sign-in page for the research workspace
 - Model performance dashboard
 
 ## 🧰 Technologies Used
@@ -287,6 +288,7 @@ The frontend is served at `http://127.0.0.1:5173` and the API at `http://127.0.0
 
 ## 🖥️ Application Modules
 
+- **Sign in:** Enter any valid email address and a non-empty password to open the demo workspace. This is a front-end-only flow: no credentials are sent to the backend or saved, and it does not provide account authentication.
 - **Overview:** Dataset context and previously recorded model evaluation metrics.
 - **Image analysis:** Upload a histopathology image and request a model classification.
 - **Model & methods:** Review model details, validation metrics, and limitations.
