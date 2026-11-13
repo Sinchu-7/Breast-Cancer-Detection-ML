@@ -4,13 +4,9 @@ from io import BytesIO
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from PIL import Image, UnidentifiedImageError
+from starlette.concurrency import run_in_threadpool
 
-from src.predict import (
-    CLASSIFICATION_THRESHOLD,
-    IMAGE_SIZE,
-    MODEL_PATH,
-    predict_image,
-)
+from src.predict import CLASSIFICATION_THRESHOLD, IMAGE_SIZE, MODEL_PATH
 
 
 MAX_UPLOAD_BYTES = 10 * 1024 * 1024
@@ -73,6 +69,13 @@ def decode_image(data: bytes) -> Image.Image:
         ) from error
 
 
+def run_prediction(image: Image.Image) -> tuple[str, float, float]:
+    model = load_model()
+    from src.predict import predict_image
+
+    return predict_image(image, model, CLASSIFICATION_THRESHOLD)
+
+
 @app.get("/api/health")
 def health():
     model_available = MODEL_PATH.is_file()
@@ -106,20 +109,16 @@ async def predict(file: UploadFile = File(...)):
     image = decode_image(data)
 
     try:
-        model = load_model()
+        predicted_class, confidence, malignant_score = await run_in_threadpool(
+            run_prediction,
+            image,
+        )
     except FileNotFoundError as error:
         raise HTTPException(
             status_code=503,
             detail="The trained model is unavailable. Add the model file to models/.",
         ) from error
 
-    from src.predict import predict_image
-
-    predicted_class, confidence, malignant_score = predict_image(
-        image,
-        model,
-        CLASSIFICATION_THRESHOLD,
-    )
     return {
         "predicted_class": predicted_class,
         "confidence_percent": round(confidence, 2),

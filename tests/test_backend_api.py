@@ -79,3 +79,43 @@ def test_predict_endpoint_returns_prediction(monkeypatch):
     assert response.json()["predicted_class"] == "Malignant"
     assert response.json()["confidence_percent"] == 85.0
     assert response.json()["malignant_score_percent"] == 85.0
+
+
+def test_predict_endpoint_reports_missing_model(monkeypatch):
+    def missing_model():
+        raise FileNotFoundError("model missing")
+
+    monkeypatch.setattr(main, "load_model", missing_model)
+
+    response = client.post(
+        "/api/predict",
+        files={"file": ("sample.png", image_bytes(), "image/png")},
+    )
+
+    assert response.status_code == 503
+    assert "trained model is unavailable" in response.json()["detail"]
+
+
+def test_predict_endpoint_rejects_oversized_upload():
+    response = client.post(
+        "/api/predict",
+        files={
+            "file": (
+                "oversized.png",
+                b"x" * (main.MAX_UPLOAD_BYTES + 1),
+                "image/png",
+            )
+        },
+    )
+
+    assert response.status_code == 413
+    assert "10 MB upload limit" in response.json()["detail"]
+
+
+def test_predict_endpoint_rejects_invalid_image():
+    response = client.post(
+        "/api/predict",
+        files={"file": ("invalid.png", b"not an image", "image/png")},
+    )
+
+    assert response.status_code == 400
