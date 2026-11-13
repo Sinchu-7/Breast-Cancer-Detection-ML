@@ -1,29 +1,30 @@
 import "./login.css";
 
+const galaxyStars = Array.from({ length: 56 }, (_, index) => {
+  const x = ((index * 47 + 11) % 97) + 1;
+  const y = ((index * 61 + 23) % 95) + 2;
+  const driftX = (index * 17) % 111 - 55;
+  const driftY = (index * 29) % 101 - 50;
+  const points = [
+    [driftX, driftY],
+    [-driftX * 0.65, driftY * 0.85],
+    [driftX * 0.55, -driftY],
+    [0, 0],
+  ];
+  const path = points
+    .map(([offsetX, offsetY], point) =>
+      `--star-x${point + 1}:${offsetX.toFixed(1)}px;--star-y${point + 1}:${offsetY.toFixed(1)}px`,
+    )
+    .join(";");
+  const size = index % 13 === 0 ? 3.5 : index % 4 === 0 ? 2.5 : 1.5;
+
+  return `<span style="--star-x:${x}%;--star-y:${y}%;--star-size:${size}px;--star-duration:${55 + (index * 19) % 39}s;--star-delay:-${(index * 13) % 83}s;${path}"></span>`;
+}).join("");
+
 export function loginPage() {
   return `
     <main class="login-page">
-      <div class="login-starfield" aria-hidden="true">
-        <span style="--star-x: 6%; --star-y: 13%; --star-size: 2px; --star-drift-x: 28px; --star-drift-y: 19px; --star-delay: -7s; --star-duration: 19s"></span>
-        <span style="--star-x: 14%; --star-y: 38%; --star-size: 3px; --star-drift-x: -22px; --star-drift-y: 31px; --star-delay: -13s; --star-duration: 24s"></span>
-        <span style="--star-x: 22%; --star-y: 76%; --star-size: 2px; --star-drift-x: 34px; --star-drift-y: -18px; --star-delay: -3s; --star-duration: 21s"></span>
-        <span style="--star-x: 31%; --star-y: 21%; --star-size: 2px; --star-drift-x: -30px; --star-drift-y: 22px; --star-delay: -16s; --star-duration: 27s"></span>
-        <span style="--star-x: 39%; --star-y: 54%; --star-size: 3px; --star-drift-x: 24px; --star-drift-y: -27px; --star-delay: -10s; --star-duration: 23s"></span>
-        <span style="--star-x: 47%; --star-y: 9%; --star-size: 2px; --star-drift-x: -18px; --star-drift-y: 32px; --star-delay: -5s; --star-duration: 25s"></span>
-        <span style="--star-x: 54%; --star-y: 83%; --star-size: 2px; --star-drift-x: 31px; --star-drift-y: -21px; --star-delay: -18s; --star-duration: 22s"></span>
-        <span style="--star-x: 63%; --star-y: 31%; --star-size: 3px; --star-drift-x: -26px; --star-drift-y: -24px; --star-delay: -8s; --star-duration: 28s"></span>
-        <span style="--star-x: 72%; --star-y: 66%; --star-size: 2px; --star-drift-x: 21px; --star-drift-y: 29px; --star-delay: -15s; --star-duration: 20s"></span>
-        <span style="--star-x: 81%; --star-y: 16%; --star-size: 2px; --star-drift-x: -32px; --star-drift-y: 18px; --star-delay: -4s; --star-duration: 26s"></span>
-        <span style="--star-x: 92%; --star-y: 44%; --star-size: 3px; --star-drift-x: 25px; --star-drift-y: -30px; --star-delay: -11s; --star-duration: 24s"></span>
-        <span style="--star-x: 9%; --star-y: 89%; --star-size: 2px; --star-drift-x: -20px; --star-drift-y: -25px; --star-delay: -19s; --star-duration: 29s"></span>
-        <span style="--star-x: 27%; --star-y: 48%; --star-size: 2px; --star-drift-x: 27px; --star-drift-y: 24px; --star-delay: -6s; --star-duration: 22s"></span>
-        <span style="--star-x: 44%; --star-y: 93%; --star-size: 3px; --star-drift-x: -29px; --star-drift-y: -19px; --star-delay: -14s; --star-duration: 25s"></span>
-        <span style="--star-x: 58%; --star-y: 18%; --star-size: 2px; --star-drift-x: 19px; --star-drift-y: 27px; --star-delay: -2s; --star-duration: 23s"></span>
-        <span style="--star-x: 68%; --star-y: 91%; --star-size: 2px; --star-drift-x: -24px; --star-drift-y: -28px; --star-delay: -17s; --star-duration: 27s"></span>
-        <span style="--star-x: 77%; --star-y: 51%; --star-size: 3px; --star-drift-x: 30px; --star-drift-y: 20px; --star-delay: -9s; --star-duration: 21s"></span>
-        <span style="--star-x: 87%; --star-y: 79%; --star-size: 2px; --star-drift-x: -19px; --star-drift-y: 30px; --star-delay: -12s; --star-duration: 26s"></span>
-        <span style="--star-x: 97%; --star-y: 7%; --star-size: 2px; --star-drift-x: -27px; --star-drift-y: 23px; --star-delay: -1s; --star-duration: 20s"></span>
-      </div>
+      <div class="login-starfield" aria-hidden="true">${galaxyStars}</div>
       <a class="login-brand" href="#" aria-label="Tissue Research home">
         <span class="brand-mark">t<span>.</span></span>
         <span class="brand-copy"><strong>tissue</strong><small>RESEARCH WORKSPACE</small></span>
