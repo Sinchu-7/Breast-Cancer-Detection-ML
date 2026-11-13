@@ -35,7 +35,8 @@ The system uses a pretrained **MobileNetV2** model to extract image features and
 - Interactive Vite frontend and FastAPI prediction service
 - Demo sign-in page with an animated galaxy starfield
 - Accessible, reduced-motion-aware login animation
-- Dark-themed research workspace with an account menu and sign-out
+- Dark-themed research workspace with profile-photo upload and sign-out
+- Browser-local analysis history with individual and bulk PDF export
 - Model performance dashboard
 - FastAPI health, model-information, and image-prediction endpoints
 - Bounded PNG/JPEG uploads with image-size and pixel-count validation
@@ -305,13 +306,16 @@ Prediction uploads are limited to 10 MB and must be valid PNG or JPEG images no 
 
 The login screen has a dark research-workspace theme, a responsive layout, and a decorative galaxy backdrop with 56 glowing stars that slowly wander and twinkle over a softly drifting nebula. The animation is decorative, does not intercept pointer input, and is reduced for users who enable the operating system's reduced-motion preference.
 
-Sign-in remains a front-end-only demo flow: any valid email and non-empty password opens the workspace. Credentials are not sent to the API or saved. The workspace account menu shows the email-derived display name and provides a sign-out action; it is not account authentication.
+Sign-in remains a front-end-only demo flow: any valid email and non-empty password opens the workspace. Credentials are not sent to the API or saved. The workspace account menu supports a profile photo, resized and stored in the current browser, and provides a sign-out action; it is not account authentication.
+
+Completed image analyses are recorded in browser storage for the signed-in demo email. Records include the analysis time, predicted class, confidence score, malignant-class score, and threshold. The History view can export one record or all records as PDF files and clear saved records. Uploaded histology images and their original filenames are not retained in history or included in PDF exports. Profile photos and history are local to the browser and are not synchronized to a server.
 
 ## 🖥️ Application Modules
 
-- **Sign in and profile:** Enter any valid email address and a non-empty password to open the demo workspace. The galaxy-starfield login animation respects reduced-motion preferences. The top-right profile menu shows the email-derived display name and account details, and provides sign-out. This is a front-end-only demo flow: credentials are not sent to the backend or saved, and the menu does not provide account authentication.
+- **Sign in and profile:** Enter any valid email address and a non-empty password to open the demo workspace. The galaxy-starfield login animation respects reduced-motion preferences. The top-right profile menu shows the email-derived display name, lets you add or remove a browser-local profile photo, and provides sign-out. This is a front-end-only demo flow: credentials are not sent to the backend or saved, and the menu does not provide account authentication.
 - **Overview:** Dataset context and previously recorded model evaluation metrics.
 - **Image analysis:** Upload a PNG or JPEG histopathology image within the API's size limits and request a model classification. Prediction responses are experimental and are not medical diagnoses.
+- **Analysis history:** Review saved prediction summaries, download individual or combined PDF reports, or clear this browser profile's records. Original images and filenames are not stored.
 - **Model & methods:** Review model details, validation metrics, and limitations.
 
 ## 🔮 Future Improvements

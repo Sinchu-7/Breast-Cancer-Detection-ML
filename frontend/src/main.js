@@ -8,7 +8,10 @@ const app = document.querySelector("#app");
 const state = {
   workspaceEntered: false,
   profileEmail: "",
+  profilePhoto: "",
   profileOpen: false,
+  history: [],
+  notice: "",
   view: "overview",
   file: null,
   previewUrl: "",
@@ -22,6 +25,7 @@ const icons = {
   overview: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>',
   analyze: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v3m0 12v3M3 12h3m12 0h3"/><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/></svg>',
   model: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 7v10l8 4 8-4V7l-8-4Z"/><path d="m4 7 8 4 8-4m-8 4v10"/></svg>',
+  history: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 2.64-6.36L3 8"/><path d="M3 3v5h5m4-1v5l3 2"/></svg>',
   arrow: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>',
   upload: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m-5 5 5-5 5 5"/><path d="M4 16v4h16v-4"/></svg>',
   check: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg>',
@@ -60,7 +64,49 @@ function profileInitials() {
     .toLocaleUpperCase();
 }
 
+function userStorageKey(kind) {
+  return `tissue-research:v1:${encodeURIComponent(state.profileEmail.toLowerCase())}:${kind}`;
+}
+
+function loadUserData() {
+  state.history = [];
+  state.profilePhoto = "";
+  try {
+    const storedHistory = localStorage.getItem(userStorageKey("history"));
+    if (storedHistory) {
+      const records = JSON.parse(storedHistory);
+      if (!Array.isArray(records)) throw new TypeError("History data is not a list.");
+      state.history = records.filter((record) =>
+        record &&
+        typeof record.id === "string" &&
+        typeof record.createdAt === "string" &&
+        ["Benign", "Malignant"].includes(record.predictedClass) &&
+        Number.isFinite(record.confidencePercent) &&
+        Number.isFinite(record.malignantScorePercent) &&
+        Number.isFinite(record.threshold),
+      ).slice(0, 100);
+    }
+    const photo = localStorage.getItem(userStorageKey("profile-photo"));
+    if (photo?.startsWith("data:image/jpeg;base64,")) state.profilePhoto = photo;
+  } catch (error) {
+    console.warn("Could not load this browser profile's saved data:", error);
+    state.notice = "Saved profile data could not be read from this browser.";
+  }
+}
+
+function avatarMarkup(className) {
+  return state.profilePhoto
+    ? `<img class="${className} profile-photo" src="${escapeHtml(state.profilePhoto)}" alt="" />`
+    : `<span class="${className}">${escapeHtml(profileInitials())}</span>`;
+}
+
 function shell(content) {
+  const viewLabels = {
+    overview: "Overview",
+    analyze: "Image analysis",
+    model: "Model & methods",
+    history: "Analysis history",
+  };
   app.innerHTML = `
     <div class="workspace">
       <aside class="sidebar">
@@ -73,6 +119,7 @@ function shell(content) {
           ${navButton("overview", "Overview")}
           ${navButton("analyze", "Image analysis")}
           ${navButton("model", "Model & methods")}
+          ${navButton("history", "History")}
         </nav>
         <div class="sidebar-spacer"></div>
         <div class="sidebar-note">
@@ -81,20 +128,20 @@ function shell(content) {
           <p>Not designed for diagnosis or clinical decision-making.</p>
         </div>
         <div class="sidebar-profile">
-          <span class="profile-avatar">TR</span>
+          ${avatarMarkup("profile-avatar")}
           <span><strong>Research portal</strong><small>Educational prototype</small></span>
         </div>
       </aside>
 
       <main class="main">
         <header class="topbar">
-          <div class="breadcrumb"><span>Workspace</span><i>/</i><strong>${state.view === "overview" ? "Overview" : state.view === "analyze" ? "Image analysis" : "Model & methods"}</strong></div>
+          <div class="breadcrumb"><span>Workspace</span><i>/</i><strong>${viewLabels[state.view]}</strong></div>
           <div class="topbar-right">
             <span class="service-indicator ${state.service}" role="status"><i></i>${state.service === "ready" ? "Model available" : state.service === "unavailable" ? "Model unavailable" : state.service === "offline" ? "Service offline" : "Checking service"}</span>
             <span class="topbar-divider"></span>
             <div class="profile-menu-container">
               <button class="header-profile" type="button" data-action="toggle-profile" aria-expanded="${state.profileOpen}" aria-controls="profile-dropdown">
-                <span class="header-avatar">${escapeHtml(profileInitials())}</span>
+                ${avatarMarkup("header-avatar")}
                 <span class="header-profile-copy">
                   <strong>${escapeHtml(profileDisplayName())}</strong>
                   <small>${escapeHtml(state.profileEmail)}</small>
@@ -102,7 +149,7 @@ function shell(content) {
               </button>
               <section class="profile-dropdown" id="profile-dropdown" aria-label="Profile details" ${state.profileOpen ? "" : "hidden"}>
                 <div class="profile-dropdown-heading">
-                  <span class="profile-dropdown-avatar">${escapeHtml(profileInitials())}</span>
+                  ${avatarMarkup("profile-dropdown-avatar")}
                   <div>
                     <strong>${escapeHtml(profileDisplayName())}</strong>
                     <span class="profile-dropdown-email">${escapeHtml(state.profileEmail)}</span>
@@ -116,6 +163,9 @@ function shell(content) {
                   <span>Account</span>
                   <strong class="profile-demo-badge">Demo account</strong>
                 </div>
+                <input class="profile-photo-input" type="file" accept="image/png,image/jpeg,image/webp" data-action="profile-photo-input" aria-label="Choose profile photo" />
+                <button class="profile-photo-action" type="button" data-action="choose-photo">Add or change photo</button>
+                ${state.profilePhoto ? '<button class="profile-photo-remove" type="button" data-action="remove-photo">Remove photo</button>' : ""}
                 <button class="profile-sign-out" type="button" data-action="sign-out">
                   ${icons.logout}<span>Sign out</span>
                 </button>
@@ -123,6 +173,7 @@ function shell(content) {
             </div>
           </div>
         </header>
+        ${state.notice ? `<div class="workspace-notice" role="status">${escapeHtml(state.notice)}<button type="button" data-action="dismiss-notice" aria-label="Dismiss message">×</button></div>` : ""}
         ${content}
         <footer class="page-footer">
           <span>Histology image classification · Educational research prototype</span>
@@ -131,13 +182,34 @@ function shell(content) {
       </main>
     </div>`;
   bindNavigation();
-    const profileTrigger = app.querySelector("[data-action='toggle-profile']");
-    const profileDropdown = app.querySelector("#profile-dropdown");
-    profileTrigger.addEventListener("click", () => {
-      state.profileOpen = !state.profileOpen;
-      profileDropdown.hidden = !state.profileOpen;
-      profileTrigger.setAttribute("aria-expanded", String(state.profileOpen));
+  const profileTrigger = app.querySelector("[data-action='toggle-profile']");
+  const profileDropdown = app.querySelector("#profile-dropdown");
+  profileTrigger.addEventListener("click", () => {
+    state.profileOpen = !state.profileOpen;
+    profileDropdown.hidden = !state.profileOpen;
+    profileTrigger.setAttribute("aria-expanded", String(state.profileOpen));
+  });
+  app.querySelector("[data-action='choose-photo']").addEventListener("click", () => {
+    app.querySelector("[data-action='profile-photo-input']").click();
+  });
+  app.querySelector("[data-action='profile-photo-input']").addEventListener("change", (event) => {
+    updateProfilePhoto(event.target.files?.[0]);
+  });
+  app.querySelector("[data-action='remove-photo']")?.addEventListener("click", removeProfilePhoto);
+  app.querySelector("[data-action='dismiss-notice']")?.addEventListener("click", () => {
+    state.notice = "";
+    render();
+  });
+  app.querySelector("[data-action='download-history']")?.addEventListener("click", () => {
+    downloadRecordsPdf(state.history);
+  });
+  app.querySelectorAll("[data-action='download-record']").forEach((button) => {
+    button.addEventListener("click", () => {
+      const record = state.history.find((entry) => entry.id === button.dataset.recordId);
+      if (record) downloadRecordsPdf([record]);
     });
+  });
+  app.querySelector("[data-action='clear-history']")?.addEventListener("click", clearHistory);
 }
 
 function overviewPage() {
@@ -279,6 +351,39 @@ function modelPage() {
     </section>`;
 }
 
+function historyPage() {
+  const records = state.history.map((record) => `
+    <article class="history-record">
+      <div class="history-record-main">
+        <span class="history-class ${record.predictedClass.toLowerCase()}">${escapeHtml(record.predictedClass)}</span>
+        <h2>Histology image analysis</h2>
+        <time datetime="${escapeHtml(record.createdAt)}">${escapeHtml(new Date(record.createdAt).toLocaleString())}</time>
+      </div>
+      <div class="history-record-scores">
+        <span><strong>${record.confidencePercent.toFixed(2)}%</strong> confidence</span>
+        <span><strong>${record.malignantScorePercent.toFixed(2)}%</strong> malignant score</span>
+        <span>Threshold ${record.threshold.toFixed(2)}</span>
+      </div>
+      <button class="button button-secondary history-download" type="button" data-action="download-record" data-record-id="${escapeHtml(record.id)}">Download PDF</button>
+    </article>`).join("");
+
+  return `
+    <section class="page-content">
+      <div class="eyebrow"><span class="eyebrow-line"></span> WORKSPACE · SAVED ANALYSES</div>
+      <div class="page-title-row history-title-row">
+        <div><h1 class="page-title">Analysis history</h1><p class="page-subtitle">Review and download your saved model-output summaries.</p></div>
+        <div class="history-actions">
+          <button class="button button-secondary" type="button" data-action="download-history" ${state.history.length ? "" : "disabled"}>Download all PDFs</button>
+          <button class="button button-secondary" type="button" data-action="clear-history" ${state.history.length ? "" : "disabled"}>Clear history</button>
+        </div>
+      </div>
+      <p class="history-privacy">${icons.shield}<span>Records are saved only in this browser profile. Neither uploaded image data nor original filenames are retained or included in PDF exports.</span></p>
+      <section class="history-list" aria-label="Saved analysis records">
+        ${records || `<div class="history-empty"><span>${icons.history}</span><h2>No analyses saved yet</h2><p>Completed image classifications will appear here. Start with an image analysis to create your first record.</p><button class="button button-primary" type="button" data-view="analyze">Open image analysis ${icons.arrow}</button></div>`}
+      </section>
+    </section>`;
+}
+
 function escapeHtml(value) {
   return String(value).replace(/[&<>"']/g, (character) => ({
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
@@ -295,6 +400,180 @@ function formatBytes(bytes) {
     : `${Math.max(1, Math.round(bytes / 1024))} KB`;
 }
 
+async function updateProfilePhoto(file) {
+  if (!file) return;
+  if (!["image/png", "image/jpeg", "image/webp"].includes(file.type)) {
+    state.notice = "Choose a PNG, JPEG, or WebP profile photo.";
+    render();
+    return;
+  }
+  if (file.size > 5 * 1024 * 1024) {
+    state.notice = "Profile photos must be 5 MB or smaller.";
+    render();
+    return;
+  }
+
+  try {
+    const bitmap = await createImageBitmap(file);
+    if (bitmap.width * bitmap.height > 40_000_000) {
+      bitmap.close();
+      throw new Error("The profile photo dimensions are too large.");
+    }
+    const size = 256;
+    const cropSize = Math.min(bitmap.width, bitmap.height);
+    const canvas = document.createElement("canvas");
+    canvas.width = size;
+    canvas.height = size;
+    const context = canvas.getContext("2d");
+    if (!context) {
+      bitmap.close();
+      throw new Error("Your browser could not process this profile photo.");
+    }
+    context.drawImage(
+      bitmap,
+      (bitmap.width - cropSize) / 2,
+      (bitmap.height - cropSize) / 2,
+      cropSize,
+      cropSize,
+      0,
+      0,
+      size,
+      size,
+    );
+    bitmap.close();
+    const photo = canvas.toDataURL("image/jpeg", 0.8);
+    localStorage.setItem(userStorageKey("profile-photo"), photo);
+    state.profilePhoto = photo;
+    state.notice = "Profile photo updated on this browser.";
+  } catch (error) {
+    console.warn("Could not save profile photo:", error);
+    state.notice = error instanceof Error
+      ? error.message
+      : "Could not save the profile photo in this browser.";
+  }
+  render();
+}
+
+function removeProfilePhoto() {
+  try {
+    localStorage.removeItem(userStorageKey("profile-photo"));
+    state.profilePhoto = "";
+    state.notice = "Profile photo removed.";
+  } catch (error) {
+    console.warn("Could not remove profile photo:", error);
+    state.notice = "Could not remove the profile photo from this browser.";
+  }
+  render();
+}
+
+function saveAnalysisRecord(result) {
+  const record = {
+    id: globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+    createdAt: new Date().toISOString(),
+    predictedClass: result.predicted_class,
+    confidencePercent: Number(result.confidence_percent),
+    malignantScorePercent: Number(result.malignant_score_percent),
+    threshold: Number(result.threshold),
+  };
+  state.history = [record, ...state.history].slice(0, 100);
+  try {
+    localStorage.setItem(userStorageKey("history"), JSON.stringify(state.history));
+  } catch (error) {
+    console.warn("Could not save analysis history:", error);
+    state.notice = "This result is available for this session, but browser storage could not save it.";
+  }
+}
+
+function clearHistory() {
+  if (!state.history.length || !window.confirm("Clear all saved analysis records for this browser profile?")) return;
+  try {
+    localStorage.removeItem(userStorageKey("history"));
+    state.history = [];
+    state.notice = "Analysis history cleared.";
+  } catch (error) {
+    console.warn("Could not clear analysis history:", error);
+    state.notice = "Could not clear the saved analysis history.";
+  }
+  render();
+}
+
+function pdfSafeText(value) {
+  return String(value)
+    .normalize("NFKD")
+    .replace(/[^\x20-\x7E]/g, "?")
+    .replace(/([\\()])/g, "\\$1");
+}
+
+function createRecordsPdf(records) {
+  const objects = [
+    "<< /Type /Catalog /Pages 2 0 R >>",
+    "",
+    "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
+  ];
+  const pageReferences = [];
+
+  records.forEach((record, index) => {
+    const pageObject = 4 + index * 2;
+    const contentObject = pageObject + 1;
+    pageReferences.push(`${pageObject} 0 R`);
+    const lines = [
+      "Tissue Research - Analysis Record",
+      "---------------------------------------------",
+      `Record ID: ${record.id}`,
+      `Analysis date: ${new Date(record.createdAt).toLocaleString("en-US", { timeZone: "UTC" })} UTC`,
+      "Specimen image: Not stored with this record",
+      `Model output: ${record.predictedClass}`,
+      `Model confidence: ${record.confidencePercent.toFixed(2)}%`,
+      `Malignant-class score: ${record.malignantScorePercent.toFixed(2)}%`,
+      `Classification threshold: ${record.threshold.toFixed(2)}`,
+      "",
+      "Educational research only. This experimental model output is not a",
+      "medical diagnosis and must not guide healthcare decisions.",
+      "The uploaded image is not stored or included in this report.",
+    ];
+    const commands = [
+      "BT",
+      "/F1 18 Tf",
+      "54 736 Td",
+      `(${pdfSafeText(lines[0])}) Tj`,
+      "/F1 11 Tf",
+      ...lines.slice(1).map((line) => `0 -28 Td (${pdfSafeText(line)}) Tj`),
+      "ET",
+    ].join("\n");
+    objects[pageObject - 1] = `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents ${contentObject} 0 R >>`;
+    objects[contentObject - 1] = `<< /Length ${commands.length} >>\nstream\n${commands}\nendstream`;
+  });
+
+  objects[1] = `<< /Type /Pages /Kids [${pageReferences.join(" ")}] /Count ${records.length} >>`;
+  let document = "%PDF-1.4\n";
+  const offsets = [0];
+  objects.forEach((object, index) => {
+    offsets.push(document.length);
+    document += `${index + 1} 0 obj\n${object}\nendobj\n`;
+  });
+  const xrefOffset = document.length;
+  document += `xref\n0 ${objects.length + 1}\n0000000000 65535 f \n`;
+  offsets.slice(1).forEach((offset) => {
+    document += `${String(offset).padStart(10, "0")} 00000 n \n`;
+  });
+  document += `trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF`;
+  return new Blob([document], { type: "application/pdf" });
+}
+
+function downloadRecordsPdf(records) {
+  if (!records.length) return;
+  const url = URL.createObjectURL(createRecordsPdf(records));
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = records.length === 1
+    ? `analysis-record-${records[0].id}.pdf`
+    : `analysis-history-${new Date().toISOString().slice(0, 10)}.pdf`;
+  document.body.append(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
 function render() {
   if (!state.workspaceEntered) {
     app.innerHTML = loginPage();
@@ -306,18 +585,23 @@ function render() {
     ? analyzePage()
     : state.view === "model"
       ? modelPage()
-      : overviewPage();
+      : state.view === "history"
+        ? historyPage()
+        : overviewPage();
   shell(content);
   app.querySelector("[data-action='sign-out']").addEventListener("click", () => {
     if (state.previewUrl) URL.revokeObjectURL(state.previewUrl);
     state.workspaceEntered = false;
     state.profileEmail = "";
+    state.profilePhoto = "";
+    state.history = [];
     state.profileOpen = false;
     state.view = "overview";
     state.file = null;
     state.previewUrl = "";
     state.result = null;
     state.error = "";
+    state.notice = "";
     render();
   });
   if (state.view === "analyze") bindUploader();
@@ -338,6 +622,7 @@ function bindLogin() {
     event.preventDefault();
     if (!form.reportValidity()) return;
     state.profileEmail = form.querySelector("#login-email").value.trim();
+    loadUserData();
     state.workspaceEntered = true;
     render();
   });
@@ -453,6 +738,7 @@ async function runAnalysis() {
     const payload = await response.json();
     if (!response.ok) throw new Error(payload.detail || "The prediction request failed.");
     state.result = payload;
+    saveAnalysisRecord(payload);
   } catch (error) {
     state.error = error instanceof TypeError
       ? "Could not reach the prediction service. Check that the backend is running."
