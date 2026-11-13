@@ -17,8 +17,66 @@
   pointer-events: none;
 }
 
+.workspace-starfield {
+  position: fixed;
+  z-index: 2;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.xray-lens {
+  position: fixed;
+  z-index: 6;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0;
+  backdrop-filter: blur(1.2px) saturate(1.18) hue-rotate(16deg) contrast(1.035);
+  -webkit-backdrop-filter: blur(1.2px) saturate(1.18) hue-rotate(16deg) contrast(1.035);
+  mask-image: radial-gradient(ellipse 82px 46px at var(--xray-x, -200px) var(--xray-y, -200px), #000 0 68%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 82px 46px at var(--xray-x, -200px) var(--xray-y, -200px), #000 0 68%, transparent 100%);
+  transition: opacity .22s ease;
+}
+
+.xray-lens[data-active="true"] {
+  opacity: 1;
+}
+
+.xray-lens::after {
+  position: absolute;
+  top: var(--xray-y, -200px);
+  left: var(--xray-x, -200px);
+  width: 164px;
+  height: 92px;
+  border: 1px solid #9de5e51c;
+  border-radius: 62% 38% 56% 44% / 46% 58% 42% 54%;
+  background:
+    radial-gradient(ellipse at 42% 38%, #8de4df08 0, transparent 64%),
+    linear-gradient(174deg, transparent 28%, #9de5e50a 45%, transparent 63%),
+    linear-gradient(4deg, transparent 45%, #c39bda08 57%, transparent 72%);
+  box-shadow: 0 0 12px #81dce80d, inset 0 0 12px #81dce80b;
+  content: "";
+  transform: translate(-50%, -50%);
+  animation: xray-water-wobble 1.8s ease-in-out infinite alternate;
+}
+
+@keyframes xray-water-wobble {
+  from {
+    border-radius: 62% 38% 56% 44% / 46% 58% 42% 54%;
+    transform: translate(-50%, -50%) rotate(-3deg) scaleX(.97);
+  }
+
+  to {
+    border-radius: 43% 57% 39% 61% / 57% 42% 58% 43%;
+    transform: translate(-50%, -50%) rotate(3deg) scaleX(1.03);
+  }
+}
+
 .login-starfield::before,
-.login-starfield::after {
+.login-starfield::after,
+.workspace-starfield::before,
+.workspace-starfield::after {
   position: absolute;
   inset: -35%;
   content: "";
@@ -42,6 +100,22 @@
   animation-direction: alternate-reverse;
 }
 
+.workspace-starfield::before {
+  opacity: .13;
+  background:
+    radial-gradient(ellipse at 24% 38%, #8e526b35, transparent 30%),
+    radial-gradient(ellipse at 72% 62%, #644c8b2c, transparent 34%);
+}
+
+.workspace-starfield::after {
+  opacity: .1;
+  background:
+    radial-gradient(ellipse at 82% 23%, #b26a7930, transparent 28%),
+    radial-gradient(ellipse at 36% 78%, #74518e24, transparent 32%);
+  animation-duration: 110s;
+  animation-direction: alternate-reverse;
+}
+
 .login-starfield span {
   position: absolute;
   top: var(--star-y);
@@ -54,6 +128,46 @@
   opacity: .48;
   animation: galaxy-drift var(--star-duration) ease-in-out var(--star-delay) infinite;
   will-change: transform, opacity;
+}
+
+.workspace-starfield span {
+  position: absolute;
+  top: var(--star-y);
+  left: var(--star-x);
+  width: var(--star-size);
+  height: var(--star-size);
+  border-radius: 50%;
+  background: #f4d9d4;
+  box-shadow: 0 0 7px 2px #e6a8b566, 0 0 17px 4px #c580a526;
+  animation: workspace-galaxy-drift var(--star-duration) ease-in-out var(--star-delay) infinite;
+  will-change: transform, opacity;
+}
+
+@keyframes workspace-galaxy-drift {
+  0% {
+    opacity: .12;
+    transform: translate3d(0, 0, 0) scale(.8);
+  }
+
+  25% {
+    opacity: .42;
+    transform: translate3d(var(--star-x1), var(--star-y1), 0) scale(1.3);
+  }
+
+  50% {
+    opacity: .2;
+    transform: translate3d(var(--star-x2), var(--star-y2), 0) scale(.92);
+  }
+
+  75% {
+    opacity: .45;
+    transform: translate3d(var(--star-x3), var(--star-y3), 0) scale(1.2);
+  }
+
+  100% {
+    opacity: .14;
+    transform: translate3d(var(--star-x4), var(--star-y4), 0) scale(.82);
+  }
 }
 
 @keyframes galaxy-drift {

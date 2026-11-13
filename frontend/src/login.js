@@ -21,10 +21,19 @@ const galaxyStars = Array.from({ length: 56 }, (_, index) => {
   return `<span style="--star-x:${x}%;--star-y:${y}%;--star-size:${size}px;--star-duration:${55 + (index * 19) % 39}s;--star-delay:-${(index * 13) % 83}s;${path}"></span>`;
 }).join("");
 
+export function starfieldMarkup(className) {
+  return `<div class="${className}" aria-hidden="true">${galaxyStars}</div>`;
+}
+
+export function xrayLensMarkup() {
+  return '<div class="xray-lens" aria-hidden="true"></div>';
+}
+
 export function loginPage() {
   return `
     <main class="login-page">
-      <div class="login-starfield" aria-hidden="true">${galaxyStars}</div>
+      ${starfieldMarkup("login-starfield")}
+      ${xrayLensMarkup()}
       <a class="login-brand" href="#" aria-label="Tissue Research home">
         <span class="brand-mark">t<span>.</span></span>
         <span class="brand-copy"><strong>tissue</strong><small>RESEARCH WORKSPACE</small></span>

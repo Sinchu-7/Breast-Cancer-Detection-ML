@@ -275,20 +275,15 @@ python -m src.evaluate_image_model
 
 ### 9. Run the frontend and backend
 
-In one terminal, install the frontend dependencies and start Vite:
+Install the frontend dependencies once:
 
 ```bash
 cd frontend
 npm install
-npm run dev
+cd ..
 ```
 
-In a second terminal, from the repository root, activate the Python environment created above and run:
-
-```bash
-cd backend
-npm run dev
-```
+On Windows, run `start.bat` from the repository root to start the API and frontend in separate windows and open the workspace in your browser. The launcher uses the project `venv` or `.venv` when available; otherwise, it uses Python on `PATH`. Make sure the Python dependencies are installed with `python -m pip install -r requirements.txt`.
 
 The frontend is served at `http://127.0.0.1:5173` and the API at `http://127.0.0.1:8000`. The trained model file must be available at `models/breast_histopathology_mobilenetv2.keras` for predictions; model weights are not included in this repository. The API starts without loading TensorFlow or the model; these are loaded on the first prediction request. Model loading and prediction run in a worker thread so inference does not block the async request loop.
 

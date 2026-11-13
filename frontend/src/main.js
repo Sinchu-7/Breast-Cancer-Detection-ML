@@ -1,6 +1,6 @@
 import "./style.css";
 import "./theme.css";
-import { loginPage } from "./login.js";
+import { loginPage, starfieldMarkup, xrayLensMarkup } from "./login.js";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
 const app = document.querySelector("#app");
@@ -109,6 +109,8 @@ function shell(content) {
   };
   app.innerHTML = `
     <div class="workspace">
+      ${starfieldMarkup("workspace-starfield")}
+      ${xrayLensMarkup()}
       <aside class="sidebar">
         <a class="brand" href="#" data-view="overview" aria-label="Tissue Research home">
           <span class="brand-mark">t<span>.</span></span>
@@ -662,6 +664,38 @@ function bindProfileDismissal() {
   });
 }
 
+function bindXrayLens() {
+  let animationFrame = 0;
+  let idleTimeout = 0;
+  let pointerX = 0;
+  let pointerY = 0;
+
+  function updateLens(event) {
+    pointerX = event.clientX;
+    pointerY = event.clientY;
+    if (animationFrame) return;
+
+    animationFrame = requestAnimationFrame(() => {
+      animationFrame = 0;
+      const lens = app.querySelector(".xray-lens");
+      if (!lens) return;
+      lens.style.setProperty("--xray-x", `${pointerX}px`);
+      lens.style.setProperty("--xray-y", `${pointerY}px`);
+      lens.dataset.active = "true";
+    });
+
+    window.clearTimeout(idleTimeout);
+    idleTimeout = window.setTimeout(() => {
+      app.querySelector(".xray-lens")?.removeAttribute("data-active");
+    }, 450);
+  }
+
+  document.addEventListener("pointermove", updateLens, { passive: true });
+  document.addEventListener("pointerdown", (event) => {
+    if (event.pointerType === "touch") updateLens(event);
+  }, { passive: true });
+}
+
 function setFile(file) {
   state.error = "";
   state.result = null;
@@ -764,4 +798,5 @@ async function checkService() {
 
 render();
 bindProfileDismissal();
+bindXrayLens();
 checkService();

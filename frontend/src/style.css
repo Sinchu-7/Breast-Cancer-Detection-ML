@@ -24,7 +24,7 @@ button { color: inherit; }
 button:focus-visible, a:focus-visible, [tabindex]:focus-visible { outline: 3px solid #d99068; outline-offset: 3px; }
 svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.65; stroke-linecap: round; stroke-linejoin: round; }
 
-.workspace { min-height: 100vh; }
+.workspace { position: relative; isolation: isolate; min-height: 100vh; background: var(--canvas); }
 .sidebar { width: 242px; position: fixed; inset: 0 auto 0 0; z-index: 4; display: flex; flex-direction: column; padding: 28px 17px 17px; background: #fff; border-right: 1px solid var(--line); }
 .brand { display: flex; align-items: center; gap: 11px; color: var(--ink); text-decoration: none; padding: 0 7px; }
 .brand-mark { width: 38px; height: 38px; display: grid; place-items: center; border-radius: 12px; background: var(--ink); color: white; font: 800 24px/1 Manrope, sans-serif; letter-spacing: -3px; padding-right: 3px; }
@@ -49,7 +49,7 @@ svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width:
 .sidebar-profile small { display: block; margin-top: 3px; color: var(--muted); font-size: 9px; }
 .profile-dots { margin-left: auto; color: #9c9e9a; font-size: 20px; letter-spacing: 2px; }
 
-.main { min-height: 100vh; margin-left: 242px; padding: 0 48px; }
+.main { position: relative; z-index: 1; min-height: 100vh; margin-left: 242px; padding: 0 48px; }
 .topbar { height: 64px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e6e7e5; }
 .breadcrumb { display: flex; align-items: center; gap: 10px; color: #939691; font-size: 11px; }
 .breadcrumb i { color: #c7c8c5; font-style: normal; }
