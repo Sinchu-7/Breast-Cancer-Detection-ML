@@ -2,9 +2,13 @@ from io import BytesIO
 
 import pytest
 from fastapi import HTTPException
+from fastapi.testclient import TestClient
 from PIL import Image
 
-from backend.main import decode_image
+from backend import main
+from backend.main import app, decode_image
+
+client = TestClient(app)
 
 
 def image_bytes(image_format="PNG"):
@@ -36,3 +40,42 @@ def test_decode_image_rejects_invalid_or_unsupported_images(data, status_code):
         decode_image(data)
 
     assert error.value.status_code == status_code
+
+
+def test_health_endpoint_reports_model_availability(monkeypatch, tmp_path):
+    monkeypatch.setattr(main, "MODEL_PATH", tmp_path / "missing.keras")
+
+    response = client.get("/api/health")
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "status": "model_unavailable",
+        "model_available": False,
+    }
+
+
+def test_model_endpoint_returns_model_metadata():
+    response = client.get("/api/model")
+
+    assert response.status_code == 200
+    assert response.json()["input_size"] == [224, 224]
+    assert response.json()["classes"] == ["Benign", "Malignant"]
+
+
+def test_predict_endpoint_returns_prediction(monkeypatch):
+    monkeypatch.setattr(main, "load_model", lambda: object())
+    monkeypatch.setattr(
+        "src.predict.predict_image",
+        lambda image, model, threshold: ("Malignant", 85.0, 0.85),
+        raising=False,
+    )
+
+    response = client.post(
+        "/api/predict",
+        files={"file": ("sample.png", image_bytes(), "image/png")},
+    )
+
+    assert response.status_code == 200
+    assert response.json()["predicted_class"] == "Malignant"
+    assert response.json()["confidence_percent"] == 85.0
+    assert response.json()["malignant_score_percent"] == 85.0

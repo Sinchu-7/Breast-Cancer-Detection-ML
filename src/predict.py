@@ -4,8 +4,6 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
-from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
-
 
 # Project configuration
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -28,6 +26,7 @@ def preprocess_image(image):
     """
     Prepare an uploaded image for MobileNetV2 prediction.
     """
+    from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
 
     image = image.convert("RGB")
     image = image.resize(IMAGE_SIZE)

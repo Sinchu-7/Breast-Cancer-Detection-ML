@@ -1,7 +1,6 @@
 from functools import lru_cache
 from io import BytesIO
 
-import tensorflow as tf
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from PIL import Image, UnidentifiedImageError
@@ -39,6 +38,8 @@ app.add_middleware(
 def load_model():
     if not MODEL_PATH.is_file():
         raise FileNotFoundError(f"Model file not found: {MODEL_PATH}")
+    import tensorflow as tf
+
     return tf.keras.models.load_model(MODEL_PATH)
 
 
@@ -111,6 +112,8 @@ async def predict(file: UploadFile = File(...)):
             status_code=503,
             detail="The trained model is unavailable. Add the model file to models/.",
         ) from error
+
+    from src.predict import predict_image
 
     predicted_class, confidence, malignant_score = predict_image(
         image,
