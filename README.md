@@ -33,8 +33,13 @@ The system uses a pretrained **MobileNetV2** model to extract image features and
 - Structured logging for dataset operations
 - Automated unit testing
 - Interactive Vite frontend and FastAPI prediction service
-- Demo sign-in page for the research workspace
+- Demo sign-in page with an animated galaxy starfield
+- Accessible, reduced-motion-aware login animation
+- Dark-themed research workspace with an account menu and sign-out
 - Model performance dashboard
+- FastAPI health, model-information, and image-prediction endpoints
+- Bounded PNG/JPEG uploads with image-size and pixel-count validation
+- Lazy TensorFlow loading and off-event-loop model inference
 
 ## 🧰 Technologies Used
 
@@ -284,13 +289,29 @@ cd backend
 npm run dev
 ```
 
-The frontend is served at `http://127.0.0.1:5173` and the API at `http://127.0.0.1:8000`. The trained model file must be available at `models/breast_histopathology_mobilenetv2.keras` for predictions; model weights are not included in this repository.
+The frontend is served at `http://127.0.0.1:5173` and the API at `http://127.0.0.1:8000`. The trained model file must be available at `models/breast_histopathology_mobilenetv2.keras` for predictions; model weights are not included in this repository. The API starts without loading TensorFlow or the model; these are loaded on the first prediction request. Model loading and prediction run in a worker thread so inference does not block the async request loop.
+
+### API endpoints
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/api/health` | Reports whether the trained model file is available. |
+| `GET` | `/api/model` | Returns model architecture, input size, classes, and classification threshold. |
+| `POST` | `/api/predict` | Accepts an image as multipart form data in the `file` field and returns an experimental classification. |
+
+Prediction uploads are limited to 10 MB and must be valid PNG or JPEG images no larger than 25 megapixels. The API does not save uploaded images. Interactive API documentation is available at `http://127.0.0.1:8000/docs` while the service is running.
+
+### Login and workspace experience
+
+The login screen has a dark research-workspace theme, a responsive layout, and a decorative galaxy backdrop with 56 glowing stars that slowly wander and twinkle over a softly drifting nebula. The animation is decorative, does not intercept pointer input, and is reduced for users who enable the operating system's reduced-motion preference.
+
+Sign-in remains a front-end-only demo flow: any valid email and non-empty password opens the workspace. Credentials are not sent to the API or saved. The workspace account menu shows the email-derived display name and provides a sign-out action; it is not account authentication.
 
 ## 🖥️ Application Modules
 
-- **Sign in and profile:** Enter any valid email address and a non-empty password to open the demo workspace. The top-right profile menu shows the email-derived display name and account details, and provides sign-out. This is a front-end-only demo flow: credentials are not sent to the backend or saved, and the menu does not provide account authentication.
+- **Sign in and profile:** Enter any valid email address and a non-empty password to open the demo workspace. The galaxy-starfield login animation respects reduced-motion preferences. The top-right profile menu shows the email-derived display name and account details, and provides sign-out. This is a front-end-only demo flow: credentials are not sent to the backend or saved, and the menu does not provide account authentication.
 - **Overview:** Dataset context and previously recorded model evaluation metrics.
-- **Image analysis:** Upload a histopathology image and request a model classification.
+- **Image analysis:** Upload a PNG or JPEG histopathology image within the API's size limits and request a model classification. Prediction responses are experimental and are not medical diagnoses.
 - **Model & methods:** Review model details, validation metrics, and limitations.
 
 ## 🔮 Future Improvements
