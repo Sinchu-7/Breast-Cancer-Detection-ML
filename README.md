@@ -9,6 +9,21 @@ An educational deep learning project that classifies breast histopathology image
 
 ---
 
+## 📑 Table of Contents
+
+- [Project Overview](#-project-overview)
+- [Features](#-features)
+- [Technologies Used](#-technologies-used)
+- [Dataset](#-dataset)
+- [Model Development](#️-model-development)
+- [Dataset Validation](#-dataset-validation-and-statistics)
+- [Model Performance](#-model-performance)
+- [Installation and Setup](#-installation-and-setup)
+- [Application Modules](#️-application-modules)
+- [Future Improvements](#-future-improvements)
+- [Author](#-author)
+
+---
 ## 📌 Project Overview
 
 Breast cancer is one of the most common cancers worldwide. This project explores how deep learning and computer vision can help classify histopathological breast tissue images.
